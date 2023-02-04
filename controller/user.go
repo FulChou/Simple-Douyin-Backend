@@ -24,7 +24,7 @@ func Register(ctx context.Context, c *app.RequestContext) {
 	users, err := service.RegisterUser(ctx, registerVar)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, UserLoginResponse{
-			Response: types.Response{StatusCode: 1, StatusMsg: "注册失败"},
+			Response: types.Response{StatusCode: 1, StatusMsg: "Register failed"},
 			UserId:   -1,
 			Token:    "",
 		})
@@ -33,7 +33,7 @@ func Register(ctx context.Context, c *app.RequestContext) {
 	user := users[0]
 	token := user.Password + user.UserName
 	c.JSON(http.StatusOK, UserLoginResponse{
-		Response: types.Response{StatusCode: 0, StatusMsg: "注册成功"},
+		Response: types.Response{StatusCode: 0, StatusMsg: "Register succeed"},
 		UserId:   int64(user.ID),
 		Token:    token,
 	})
@@ -52,21 +52,21 @@ func Login(ctx context.Context, c *app.RequestContext) {
 	user, err := service.LoginUser(ctx, loginVar)
 	if err != nil { // user not exist
 		c.JSON(http.StatusInternalServerError, UserLoginResponse{
-			Response: types.Response{StatusCode: 1, StatusMsg: "登陆失败，用户不存在"},
+			Response: types.Response{StatusCode: 1, StatusMsg: "Login failed, user not exist"},
 			UserId:   -1,
 			Token:    "",
 		})
 		return
 	} else if loginVar.PassWord != user.Password {
 		c.JSON(http.StatusInternalServerError, UserLoginResponse{
-			Response: types.Response{StatusCode: 1, StatusMsg: "登陆失败，密码错误"},
+			Response: types.Response{StatusCode: 1, StatusMsg: "Login failed, password not correct"},
 			UserId:   -1,
 			Token:    "",
 		})
 		return
 	} else {
 		c.JSON(http.StatusOK, UserLoginResponse{
-			Response: types.Response{StatusCode: 0, StatusMsg: "登陆成功"},
+			Response: types.Response{StatusCode: 0, StatusMsg: "Login succeed"},
 			UserId:   int64(user.ID),
 			Token:    token,
 		})
