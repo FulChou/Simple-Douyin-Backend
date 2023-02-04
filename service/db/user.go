@@ -7,8 +7,10 @@ import (
 
 type User struct {
 	gorm.Model
-	UserName string `json:"user_name"`
-	Password string `json:"password"`
+	UserName      string `json:"user_name"`
+	Password      string `json:"password"`
+	FollowCount   int64  `json:"follow_count"`
+	FollowerCount int64  `json:"follower_count"`
 }
 
 func (u *User) TableName() string {
