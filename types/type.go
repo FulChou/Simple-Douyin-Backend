@@ -1,4 +1,4 @@
-package controller
+package types
 
 type UserParam struct {
 	UserName string `json:"username"`

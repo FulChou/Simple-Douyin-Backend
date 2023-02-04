@@ -3,6 +3,7 @@
 package main
 
 import (
+	"Simple-Douyin-Backend/service/db"
 	"github.com/cloudwego/hertz/pkg/app/server"
 )
 
@@ -10,5 +11,6 @@ func main() {
 	h := server.Default(server.WithHostPorts("127.0.0.1:8080"))
 
 	register(h)
+	db.Init()
 	h.Spin()
 }

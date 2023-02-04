@@ -1,48 +1,43 @@
 package controller
 
 import (
+	"Simple-Douyin-Backend/service"
+	"Simple-Douyin-Backend/types"
 	"context"
 	"github.com/cloudwego/hertz/pkg/app"
-	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"net/http"
 )
 
 type UserLoginResponse struct {
-	Response
+	types.Response
 	UserId int64  `json:"user_id,omitempty"`
 	Token  string `json:"token"`
 }
 
 func Register(ctx context.Context, c *app.RequestContext) {
-	//fmt.Println(c.Query("username"))
-	var registerVar UserParam
+	var registerVar types.UserParam
 	registerVar.UserName = c.Query("username")
 	registerVar.PassWord = c.Query("password")
 	if len(registerVar.UserName) == 0 || len(registerVar.PassWord) == 0 {
 		return
 	}
-	token := registerVar.UserName + registerVar.PassWord
-	//// check database
-	//if _, exist := usersLoginInfo[token]; exist {
-	//	c.JSON(http.StatusOK, UserLoginResponse{
-	//		Response: Response{StatusCode: 1, StatusMsg: "User already exist"},
-	//	})
-	//} else { // add new
-	//	atomic.AddInt64(&userIdSequence, 1)
-	//	newUser := User{
-	//		Id:   userIdSequence,
-	//		Name: username,
-	//	}
-	//	usersLoginInfo[token] = newUser
-	c.JSON(http.StatusOK, UserLoginResponse{
-		Response: Response{StatusCode: 0, StatusMsg: "注册成功"},
-		UserId:   1,
-		Token:    token,
-	})
-	//}
+	users, err := service.RegisterUser(ctx, registerVar)
+	user := users[0]
+	token := user.Password + user.UserName
 
-	hlog.Info("test", registerVar, c.Param("username"))
-
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, UserLoginResponse{
+			Response: types.Response{StatusCode: 1, StatusMsg: "注册失败"},
+			UserId:   -1,
+			Token:    token,
+		})
+	} else {
+		c.JSON(http.StatusOK, UserLoginResponse{
+			Response: types.Response{StatusCode: 0, StatusMsg: "注册成功"},
+			UserId:   int64(user.ID),
+			Token:    token,
+		})
+	}
 }
 
 func Login(ctx context.Context, c *app.RequestContext) {
