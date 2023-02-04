@@ -22,22 +22,22 @@ func Register(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	users, err := service.RegisterUser(ctx, registerVar)
-	user := users[0]
-	token := user.Password + user.UserName
-
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, UserLoginResponse{
 			Response: types.Response{StatusCode: 1, StatusMsg: "注册失败"},
 			UserId:   -1,
-			Token:    token,
+			Token:    "",
 		})
-	} else {
-		c.JSON(http.StatusOK, UserLoginResponse{
-			Response: types.Response{StatusCode: 0, StatusMsg: "注册成功"},
-			UserId:   int64(user.ID),
-			Token:    token,
-		})
+		return
 	}
+	user := users[0]
+	token := user.Password + user.UserName
+	c.JSON(http.StatusOK, UserLoginResponse{
+		Response: types.Response{StatusCode: 0, StatusMsg: "注册成功"},
+		UserId:   int64(user.ID),
+		Token:    token,
+	})
+
 }
 
 func Login(ctx context.Context, c *app.RequestContext) {

@@ -19,3 +19,12 @@ func (u *User) TableName() string {
 func CreateUser(ctx context.Context, users []*User) error {
 	return DB.WithContext(ctx).Create(users).Error
 }
+
+// QueryUser query list of user info by name
+func QueryUser(ctx context.Context, userName string) ([]*User, error) {
+	res := make([]*User, 0)
+	if err := DB.WithContext(ctx).Where("user_name = ?", userName).Find(&res).Error; err != nil {
+		return nil, err
+	}
+	return res, nil
+}
