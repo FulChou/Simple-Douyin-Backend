@@ -41,5 +41,35 @@ func Register(ctx context.Context, c *app.RequestContext) {
 }
 
 func Login(ctx context.Context, c *app.RequestContext) {
+	var loginVar types.UserParam
+	loginVar.UserName = c.Query("username")
+	loginVar.PassWord = c.Query("password")
+	token := loginVar.PassWord + loginVar.UserName
+
+	if len(loginVar.UserName) == 0 || len(loginVar.PassWord) == 0 {
+		return
+	}
+	user, err := service.LoginUser(ctx, loginVar)
+	if err != nil { // user not exist
+		c.JSON(http.StatusInternalServerError, UserLoginResponse{
+			Response: types.Response{StatusCode: 1, StatusMsg: "登陆失败，用户不存在"},
+			UserId:   -1,
+			Token:    "",
+		})
+		return
+	} else if loginVar.PassWord != user.Password {
+		c.JSON(http.StatusInternalServerError, UserLoginResponse{
+			Response: types.Response{StatusCode: 1, StatusMsg: "登陆失败，密码错误"},
+			UserId:   -1,
+			Token:    "",
+		})
+		return
+	} else {
+		c.JSON(http.StatusOK, UserLoginResponse{
+			Response: types.Response{StatusCode: 0, StatusMsg: "登陆成功"},
+			UserId:   int64(user.ID),
+			Token:    token,
+		})
+	}
 
 }

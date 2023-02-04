@@ -20,8 +20,19 @@ func RegisterUser(ctx context.Context, registerVar types.UserParam) ([]*db.User,
 		UserName: registerVar.UserName,
 		Password: registerVar.PassWord,
 	}}
+	// fmt.Printf("%#+v", user[0])
 	if err := db.CreateUser(ctx, user); err != nil {
+		// fmt.Println("fail")
 		return nil, err
 	}
 	return user, nil
+}
+
+func LoginUser(ctx context.Context, loginVar types.UserParam) (*db.User, error) {
+	users, err := db.QueryUser(ctx, loginVar.UserName)
+	if len(users) == 0 || err != nil {
+		return nil, errors.New("user not exist")
+	}
+
+	return users[0], nil
 }
