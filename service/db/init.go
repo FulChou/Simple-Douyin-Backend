@@ -28,6 +28,7 @@ func Init() {
 const (
 	NoteTableName           = "note"
 	UserTableName           = "user"
+	VideoTableName          = "video"
 	SecretKey               = "secret key"
 	IdentityKey             = "id"
 	Total                   = "total"
