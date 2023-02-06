@@ -20,3 +20,10 @@ func VideoPublish(ctx context.Context, title, videoPath string, userToken interf
 	return nil
 
 }
+
+type ViewVideo struct {
+}
+
+func PublishListService(user_id uint) []*ViewVideo {
+	return nil
+}

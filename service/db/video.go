@@ -22,3 +22,12 @@ func (v *Video) TableName() string {
 func CreateVideo(ctx context.Context, v Video) error {
 	return DB.WithContext(ctx).Create(&v).Error
 }
+
+func VideoListBy(ctx context.Context, user_id uint) ([]*Video, error) {
+	res := make([]*Video, 0)
+	if err := DB.Where("user_id = ?", user_id).
+		Find(&res).Error; err != nil {
+		return nil, err
+	}
+	return res, nil
+}

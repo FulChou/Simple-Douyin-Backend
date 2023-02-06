@@ -9,6 +9,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 	"net/http"
 	"path/filepath"
+	"strconv"
 )
 
 func Publish(ctx context.Context, c *app.RequestContext) {
@@ -53,5 +54,26 @@ func Publish(ctx context.Context, c *app.RequestContext) {
 		StatusCode: 0,
 		StatusMsg:  finalName + " uploaded successfully",
 	})
+
+}
+
+func PublishList(ctx context.Context, c *app.RequestContext) {
+	userToken, _ := c.Get(mw.IdentityKey)
+	if userToken == nil {
+		// user need login
+		return
+	}
+	user_id, err := strconv.ParseUint(c.Query("user_id"), 10, 64)
+	if err != nil {
+		// user id is error, need be number
+		return
+	}
+	service.PublishListService(uint(user_id))
+
+	//videos, err := db.VideoListBy(ctx, uint(user_id))
+	//if err != nil{
+	//	//
+	//	return
+	//}
 
 }

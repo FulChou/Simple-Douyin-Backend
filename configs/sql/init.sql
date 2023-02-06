@@ -27,3 +27,12 @@ CREATE TABLE `video`
     PRIMARY KEY (`id`),
     KEY          `idx_title` (`title`) COMMENT 'title index'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='video table';
+
+CREATE TABLE `favorite`
+(
+    `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
+    `user_id` bigint unsigned DEFAULT 1 NOT NULL,
+    `video_id` bigint unsigned DEFAULT 1 NOT NULL,
+    PRIMARY KEY (`id`),
+    KEY          `idx_user_id` (`user_id`) COMMENT 'user_id index'
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='favorite table';

@@ -3,7 +3,6 @@ package controller
 import (
 	"Simple-Douyin-Backend/service"
 	"Simple-Douyin-Backend/types"
-	"Simple-Douyin-Backend/utils"
 	"context"
 	"github.com/cloudwego/hertz/pkg/app"
 	"net/http"
@@ -41,36 +40,36 @@ func Register(ctx context.Context, c *app.RequestContext) {
 
 }
 
-func Login(ctx context.Context, c *app.RequestContext) {
-	var loginVar types.UserParam
-	loginVar.UserName = c.Query("username")
-	loginVar.PassWord = c.Query("password")
-	token := loginVar.PassWord + loginVar.UserName
-
-	if len(loginVar.UserName) == 0 || len(loginVar.PassWord) == 0 {
-		return
-	}
-	user, err := service.LoginUser(ctx, loginVar)
-	if err != nil { // user not exist
-		c.JSON(http.StatusInternalServerError, UserLoginResponse{
-			Response: types.Response{StatusCode: 1, StatusMsg: "Login failed, user not exist"},
-			UserId:   -1,
-			Token:    "",
-		})
-		return
-	} else if utils.MD5(loginVar.PassWord) != user.Password {
-		c.JSON(http.StatusInternalServerError, UserLoginResponse{
-			Response: types.Response{StatusCode: 1, StatusMsg: "Login failed, password not correct"},
-			UserId:   -1,
-			Token:    "",
-		})
-		return
-	} else {
-		c.JSON(http.StatusOK, UserLoginResponse{
-			Response: types.Response{StatusCode: 0, StatusMsg: "Login succeed"},
-			UserId:   int64(user.ID),
-			Token:    token,
-		})
-	}
-
-}
+//
+//func Login(ctx context.Context, c *app.RequestContext) {
+//	var loginVar types.UserParam
+//	loginVar.UserName = c.Query("username")
+//	loginVar.PassWord = c.Query("password")
+//	token := loginVar.PassWord + loginVar.UserName
+//
+//	if len(loginVar.UserName) == 0 || len(loginVar.PassWord) == 0 {
+//		return
+//	}
+//	user, err := service.LoginUser(ctx, loginVar)
+//	if err != nil { // user not exist
+//		c.JSON(http.StatusInternalServerError, UserLoginResponse{
+//			Response: types.Response{StatusCode: 1, StatusMsg: "Login failed, user not exist"},
+//			UserId:   -1,
+//			Token:    "",
+//		})
+//		return
+//	} else if utils.MD5(loginVar.PassWord) != user.Password {
+//		c.JSON(http.StatusInternalServerError, UserLoginResponse{
+//			Response: types.Response{StatusCode: 1, StatusMsg: "Login failed, password not correct"},
+//			UserId:   -1,
+//			Token:    "",
+//		})
+//		return
+//	} else {
+//		c.JSON(http.StatusOK, UserLoginResponse{
+//			Response: types.Response{StatusCode: 0, StatusMsg: "Login succeed"},
+//			UserId:   int64(user.ID),
+//			Token:    token,
+//		})
+//	}
+//}
