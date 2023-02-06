@@ -7,7 +7,8 @@ import (
 
 type Video struct {
 	gorm.Model
-	UserId        int64  `json:"user_id"`
+	UserId        uint   `json:"user_id"`
+	Title         string `json:"title"`
 	PlayUrl       string `json:"play_url"`
 	CoverUrl      string `json:"cover_url"`
 	FavoriteCount int64  `json:"favorite_count"`
@@ -19,6 +20,5 @@ func (v *Video) TableName() string {
 }
 
 func CreateVideo(ctx context.Context, v Video) error {
-
 	return DB.WithContext(ctx).Create(&v).Error
 }

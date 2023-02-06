@@ -1,7 +1,8 @@
 package controller
 
 import (
-	"Simple-Douyin-Backend/service/db"
+	"Simple-Douyin-Backend/mw"
+	"Simple-Douyin-Backend/service"
 	"Simple-Douyin-Backend/types"
 	"context"
 	"fmt"
@@ -11,14 +12,16 @@ import (
 )
 
 func Publish(ctx context.Context, c *app.RequestContext) {
-	token := c.PostForm("token")
 	title := c.PostForm("title")
-	fmt.Println("token", token)
-	//if _, exist := usersLoginInfo[token]; !exist {
-	//	c.JSON(http.StatusOK, Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
-	//	return
-	//}
-
+	userToken, _ := c.Get(mw.IdentityKey)
+	if userToken == nil {
+		// can not find user has been login
+		c.JSON(http.StatusOK, types.Response{
+			StatusCode: 1,
+			StatusMsg:  "user need login",
+		})
+		return
+	}
 	data, err := c.FormFile("data")
 	if err != nil {
 		c.JSON(http.StatusOK, types.Response{
@@ -27,23 +30,21 @@ func Publish(ctx context.Context, c *app.RequestContext) {
 		})
 		return
 	}
-
 	filename := filepath.Base(data.Filename)
-	//user := usersLoginInfo[token]
 	finalName := fmt.Sprintf("%d_%s", 0, filename)
-	saveFile := filepath.Join("./public/", title+"_"+finalName)
-	if err := c.SaveUploadedFile(data, saveFile); err != nil {
+	savePath := filepath.Join("./public/", title+"_"+finalName)
+	if err := c.SaveUploadedFile(data, savePath); err != nil {
 		c.JSON(http.StatusOK, types.Response{
 			StatusCode: 1,
 			StatusMsg:  err.Error(),
 		})
 		return
 	}
-	// create video raw in db
-	if err := db.CreateVideo(ctx, db.Video{PlayUrl: saveFile, UserId: 110}); err != nil {
+
+	if err := service.VideoPublish(ctx, title, savePath, userToken); err != nil {
 		c.JSON(http.StatusOK, types.Response{
 			StatusCode: 1,
-			StatusMsg:  "create video record fail in database",
+			StatusMsg:  err.Error(),
 		})
 		return
 	}

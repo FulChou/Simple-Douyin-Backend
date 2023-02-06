@@ -25,7 +25,7 @@ func InitJwt() {
 		Key:           []byte("secret key"),
 		Timeout:       time.Hour,
 		MaxRefresh:    time.Hour,
-		TokenLookup:   "header: Authorization, query: token, cookie: jwt",
+		TokenLookup:   "header: Authorization, query: token, cookie: jwt, form: token",
 		TokenHeadName: "Bearer",
 		LoginResponse: func(ctx context.Context, c *app.RequestContext, code int, token string, expire time.Time) {
 			c.JSON(http.StatusOK, utils.H{

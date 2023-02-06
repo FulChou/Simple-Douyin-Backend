@@ -20,16 +20,15 @@ func customizedRegister(r *server.Hertz) {
 	auth := r.Group("", mw.JwtMiddleware.MiddlewareFunc())
 	auth.GET("/refresh_token", mw.JwtMiddleware.RefreshHandler)
 	auth.GET("/ping", handler.Ping)
+	auth.POST("/douyin/publish/action/", controller.Publish)
 
 	apiRouter := r.Group("/douyin")
 	apiRouter.POST("/user/login/", mw.JwtMiddleware.LoginHandler)
-
 	// basic apis
 	//apiRouter.GET("/feed/", controller.Feed)
 	//apiRouter.GET("/user/", controller.UserInfo)
 
 	apiRouter.POST("/user/register/", controller.Register)
-	apiRouter.POST("/publish/action/", controller.Publish)
 
 	//apiRouter.GET("/publish/list/", controller.PublishList)
 	//
