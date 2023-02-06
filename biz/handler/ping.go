@@ -3,16 +3,19 @@
 package handler
 
 import (
+	"Simple-Douyin-Backend/mw"
+	"Simple-Douyin-Backend/service/db"
 	"context"
+	"fmt"
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/common/utils"
-	"github.com/cloudwego/hertz/pkg/protocol/consts"
 )
 
 // Ping .
 func Ping(ctx context.Context, c *app.RequestContext) {
-	c.JSON(consts.StatusOK, utils.H{
-		"message": "pong",
+	user, _ := c.Get(mw.IdentityKey)
+	c.JSON(200, utils.H{
+		"message": fmt.Sprintf("username:%#v", user.(*db.User).UserName),
 	})
 }

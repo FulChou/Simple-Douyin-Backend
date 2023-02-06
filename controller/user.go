@@ -3,6 +3,7 @@ package controller
 import (
 	"Simple-Douyin-Backend/service"
 	"Simple-Douyin-Backend/types"
+	"Simple-Douyin-Backend/utils"
 	"context"
 	"github.com/cloudwego/hertz/pkg/app"
 	"net/http"
@@ -57,7 +58,7 @@ func Login(ctx context.Context, c *app.RequestContext) {
 			Token:    "",
 		})
 		return
-	} else if loginVar.PassWord != user.Password {
+	} else if utils.MD5(loginVar.PassWord) != user.Password {
 		c.JSON(http.StatusInternalServerError, UserLoginResponse{
 			Response: types.Response{StatusCode: 1, StatusMsg: "Login failed, password not correct"},
 			UserId:   -1,

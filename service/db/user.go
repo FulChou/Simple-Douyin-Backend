@@ -30,3 +30,12 @@ func QueryUser(ctx context.Context, userName string) ([]*User, error) {
 	}
 	return res, nil
 }
+
+func CheckUser(account, password string) ([]*User, error) {
+	res := make([]*User, 0)
+	if err := DB.Where("user_name = ?", account).Where("password = ?", password).
+		Find(&res).Error; err != nil {
+		return nil, err
+	}
+	return res, nil
+}

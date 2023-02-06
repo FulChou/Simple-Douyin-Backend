@@ -3,6 +3,7 @@ package service
 import (
 	"Simple-Douyin-Backend/service/db"
 	"Simple-Douyin-Backend/types"
+	"Simple-Douyin-Backend/utils"
 	"context"
 	"errors"
 )
@@ -18,9 +19,8 @@ func RegisterUser(ctx context.Context, registerVar types.UserParam) ([]*db.User,
 
 	user := []*db.User{{
 		UserName: registerVar.UserName,
-		Password: registerVar.PassWord,
+		Password: utils.MD5(registerVar.PassWord),
 	}}
-	// fmt.Printf("%#+v", user[0])
 	if err := db.CreateUser(ctx, user); err != nil {
 		// fmt.Println("fail")
 		return nil, err

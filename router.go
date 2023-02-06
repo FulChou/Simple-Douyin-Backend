@@ -3,27 +3,34 @@
 package main
 
 import (
-	handler "Simple-Douyin-Backend/biz/handler"
+	"Simple-Douyin-Backend/biz/handler"
 	"Simple-Douyin-Backend/controller"
+	"Simple-Douyin-Backend/mw"
 	"github.com/cloudwego/hertz/pkg/app/server"
 )
 
 // customizeRegister registers customize routers.
 func customizedRegister(r *server.Hertz) {
-	r.GET("/ping", handler.Ping)
+	//r.GET("/ping", handler.Ping)
 
 	// your code ...
 	// public directory is used to serve static resources
 	r.Static("/static", "./public")
 
+	auth := r.Group("", mw.JwtMiddleware.MiddlewareFunc())
+	auth.GET("/refresh_token", mw.JwtMiddleware.RefreshHandler)
+	auth.GET("/ping", handler.Ping)
+
 	apiRouter := r.Group("/douyin")
+	apiRouter.POST("/user/login/", mw.JwtMiddleware.LoginHandler)
 
 	// basic apis
 	//apiRouter.GET("/feed/", controller.Feed)
 	//apiRouter.GET("/user/", controller.UserInfo)
+
 	apiRouter.POST("/user/register/", controller.Register)
-	apiRouter.POST("/user/login/", controller.Login)
 	apiRouter.POST("/publish/action/", controller.Publish)
+
 	//apiRouter.GET("/publish/list/", controller.PublishList)
 	//
 	//// extra apis - I
