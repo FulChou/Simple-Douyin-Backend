@@ -20,10 +20,31 @@ func RegisterUser(ctx context.Context, userNew *db.User) (*db.User, error) {
 	return userNew, nil
 }
 
-func LoginUser(ctx context.Context, user db.User) (*db.User, error) {
-	users, err := db.QueryUser(ctx, user.UserName)
-	if len(users) == 0 || err != nil {
-		return nil, errors.New("user not exist")
+//func LoginUser(ctx context.Context, user db.User) (*db.User, error) {
+//	users, err := db.QueryUser(ctx, user.UserName)
+//	if len(users) == 0 || err != nil {
+//		return nil, errors.New("user not exist")
+//	}
+//	return users[0], nil
+//}
+
+func GetUserInfo(ctx context.Context, userId uint, userToken interface{}) (Author, error) {
+	user, err := db.QueryUserByID(userId)
+	if err != nil || user == nil {
+		return Author{}, errors.New("fail in finding user Info")
 	}
-	return users[0], nil
+	var userInfo Author
+	users, err := db.QueryUser(ctx, userToken.(*db.User).UserName)
+	if err != nil {
+		return Author{}, errors.New("meUser doesn't exist in db")
+	}
+	myID := users[0].ID
+	userInfo = Author{
+		Id:            user.ID,
+		Name:          user.UserName,
+		FollowCount:   user.FollowCount,
+		FollowerCount: user.FollowerCount,
+		IsFollow:      db.IsFollow(myID, userId),
+	}
+	return userInfo, nil
 }

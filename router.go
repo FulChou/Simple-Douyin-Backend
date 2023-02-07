@@ -27,7 +27,7 @@ func customizedRegister(r *server.Hertz) {
 	apiRouter.POST("/user/login/", mw.JwtMiddleware.LoginHandler)
 	// basic apis
 	apiRouter.GET("/feed/", controller.Feed)
-	//apiRouter.GET("/user/", controller.UserInfo)
+	apiRouter.GET("/user/", mw.JwtMiddleware.MiddlewareFunc(), controller.UserInfo)
 
 	apiRouter.POST("/user/register/", controller.Register)
 	apiRouter.GET("/publish/list/", mw.JwtMiddleware.MiddlewareFunc(), controller.PublishList)

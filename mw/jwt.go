@@ -48,7 +48,7 @@ func InitJwt() {
 				return nil, err
 			}
 			if len(users) == 0 {
-				return nil, errors.New("user don't exists or wrong password")
+				return nil, errors.New("user not exists or wrong password")
 			}
 
 			return users[0], nil

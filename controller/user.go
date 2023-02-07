@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"Simple-Douyin-Backend/mw"
 	"Simple-Douyin-Backend/service"
 	"Simple-Douyin-Backend/service/db"
 	"Simple-Douyin-Backend/types"
@@ -8,6 +9,7 @@ import (
 	"context"
 	"github.com/cloudwego/hertz/pkg/app"
 	"net/http"
+	"strconv"
 )
 
 type UserParam struct {
@@ -19,6 +21,11 @@ type UserLoginResponse struct {
 	types.Response
 	UserId int64  `json:"user_id,omitempty"`
 	Token  string `json:"token"`
+}
+
+type UserInfoResponse struct {
+	types.Response
+	service.Author
 }
 
 func Register(ctx context.Context, c *app.RequestContext) {
@@ -78,3 +85,35 @@ func Register(ctx context.Context, c *app.RequestContext) {
 //		})
 //	}
 //}
+
+func UserInfo(ctx context.Context, c *app.RequestContext) {
+	userToken, _ := c.Get(mw.IdentityKey)
+	if userToken == nil {
+		c.JSON(http.StatusOK, UserInfoResponse{
+			Response: types.Response{StatusCode: 1, StatusMsg: "please login"},
+			Author:   service.Author{},
+		})
+		return
+	}
+	userId, err := strconv.ParseUint(c.Query("user_id"), 10, 64)
+
+	if err != nil {
+		c.JSON(http.StatusOK, UserInfoResponse{
+			Response: types.Response{StatusCode: 1, StatusMsg: "user_id params format is error"},
+			Author:   service.Author{},
+		})
+		return
+	}
+	userInfo, err := service.GetUserInfo(ctx, uint(userId), userToken)
+	if err != nil {
+		c.JSON(http.StatusOK, UserInfoResponse{
+			Response: types.Response{StatusCode: 1, StatusMsg: err.Error()},
+			Author:   userInfo,
+		})
+		return
+	}
+	c.JSON(http.StatusOK, UserInfoResponse{
+		Response: types.Response{StatusCode: 1, StatusMsg: "success"},
+		Author:   userInfo,
+	})
+}

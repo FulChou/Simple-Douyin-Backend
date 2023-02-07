@@ -39,3 +39,15 @@ CREATE TABLE `favorite`
     PRIMARY KEY (`id`),
     KEY          `idx_user_id` (`user_id`) COMMENT 'user_id index'
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='favorite table';
+
+CREATE TABLE `follow`
+(
+    `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
+    `user_id` bigint unsigned DEFAULT 1 NOT NULL,
+    `follow_user_id` bigint unsigned DEFAULT 1 NOT NULL,
+    `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Follow record create time',
+    `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Follow record update time',
+    `deleted_at` timestamp NULL DEFAULT NULL COMMENT 'Follow record delete time',
+    PRIMARY KEY (`id`),
+    KEY          `idx_user_id` (`user_id`) COMMENT 'user_id index'
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='follow table';
