@@ -2,11 +2,18 @@ package controller
 
 import (
 	"Simple-Douyin-Backend/service"
+	"Simple-Douyin-Backend/service/db"
 	"Simple-Douyin-Backend/types"
+	"Simple-Douyin-Backend/utils"
 	"context"
 	"github.com/cloudwego/hertz/pkg/app"
 	"net/http"
 )
+
+type UserParam struct {
+	UserName string `form:"username" json:"username" query:"username" vd:"(len($) > 0 && len($) < 30); msg:'Illegal format'"`
+	PassWord string `form:"password" json:"password" query:"password" vd:"(len($) > 0 && len($) < 30); msg:'Illegal format'"`
+}
 
 type UserLoginResponse struct {
 	types.Response
@@ -15,27 +22,25 @@ type UserLoginResponse struct {
 }
 
 func Register(ctx context.Context, c *app.RequestContext) {
-	var registerVar types.UserParam
-	registerVar.UserName = c.Query("username")
-	registerVar.PassWord = c.Query("password")
-	if len(registerVar.UserName) == 0 || len(registerVar.PassWord) == 0 {
-		return
+	var registerVar UserParam
+	c.BindAndValidate(&registerVar)
+	user := &db.User{
+		UserName: registerVar.UserName,
+		Password: utils.MD5(registerVar.PassWord),
 	}
-	users, err := service.RegisterUser(ctx, registerVar)
+
+	user, err := service.RegisterUser(ctx, user)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, UserLoginResponse{
-			Response: types.Response{StatusCode: 1, StatusMsg: "Register failed"},
+		c.JSON(http.StatusOK, UserLoginResponse{
+			Response: types.Response{StatusCode: 1, StatusMsg: err.Error()},
 			UserId:   -1,
-			Token:    "",
 		})
 		return
 	}
-	user := users[0]
-	token := user.Password + user.UserName
+
 	c.JSON(http.StatusOK, UserLoginResponse{
 		Response: types.Response{StatusCode: 0, StatusMsg: "Register succeed"},
 		UserId:   int64(user.ID),
-		Token:    token,
 	})
 
 }

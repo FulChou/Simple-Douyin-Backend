@@ -9,8 +9,8 @@ type User struct {
 	gorm.Model
 	UserName      string `json:"user_name"`
 	Password      string `json:"password"`
-	FollowCount   int64  `json:"follow_count" `
-	FollowerCount int64  `json:"follower_count"`
+	FollowCount   uint64 `json:"follow_count" `
+	FollowerCount uint64 `json:"follower_count"`
 }
 
 func (u *User) TableName() string {
@@ -18,7 +18,7 @@ func (u *User) TableName() string {
 }
 
 // CreateUser create user info
-func CreateUser(ctx context.Context, users []*User) error {
+func CreateUser(ctx context.Context, users *User) error {
 	return DB.WithContext(ctx).Create(users).Error
 }
 
@@ -26,6 +26,14 @@ func CreateUser(ctx context.Context, users []*User) error {
 func QueryUser(ctx context.Context, userName string) ([]*User, error) {
 	res := make([]*User, 0)
 	if err := DB.Where("user_name = ?", userName).Find(&res).Error; err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func QueryUserByID(ctx context.Context, ID uint) (*User, error) {
+	var res *User
+	if err := DB.Where("id = ?", ID).Find(&res).Error; err != nil {
 		return nil, err
 	}
 	return res, nil

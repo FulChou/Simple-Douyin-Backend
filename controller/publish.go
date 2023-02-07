@@ -57,18 +57,34 @@ func Publish(ctx context.Context, c *app.RequestContext) {
 
 }
 
+type VideoListResponse struct {
+	types.Response
+	ViewVideoList []service.ViewVideo `json:"video_list"`
+}
+
 func PublishList(ctx context.Context, c *app.RequestContext) {
 	userToken, _ := c.Get(mw.IdentityKey)
 	if userToken == nil {
 		// user need login
 		return
 	}
-	user_id, err := strconv.ParseUint(c.Query("user_id"), 10, 64)
+	userId, err := strconv.ParseUint(c.Query("user_id"), 10, 64)
 	if err != nil {
 		// user id is error, need be number
 		return
 	}
-	service.PublishListService(uint(user_id))
+	viewVideoList, err := service.PublishListService(ctx, uint(userId))
+	if err != nil {
+		c.JSON(http.StatusOK, VideoListResponse{
+			Response:      types.Response{StatusCode: 1, StatusMsg: err.Error()},
+			ViewVideoList: viewVideoList,
+		})
+		return
+	}
+	c.JSON(http.StatusOK, VideoListResponse{
+		Response:      types.Response{StatusCode: 0, StatusMsg: "success"},
+		ViewVideoList: viewVideoList,
+	})
 
 	//videos, err := db.VideoListBy(ctx, uint(user_id))
 	//if err != nil{

@@ -2,37 +2,28 @@ package service
 
 import (
 	"Simple-Douyin-Backend/service/db"
-	"Simple-Douyin-Backend/types"
-	"Simple-Douyin-Backend/utils"
 	"context"
 	"errors"
 )
 
 // RegisterUser service func
-func RegisterUser(ctx context.Context, registerVar types.UserParam) ([]*db.User, error) {
+func RegisterUser(ctx context.Context, userNew *db.User) (*db.User, error) {
 	// token := registerVar.UserName + registerVar.PassWord
 	// check database is user exist by username
-	users, err := db.QueryUser(ctx, registerVar.UserName)
+	users, err := db.QueryUser(ctx, userNew.UserName)
 	if len(users) != 0 || err != nil {
 		return nil, errors.New("user exist")
 	}
-
-	user := []*db.User{{
-		UserName: registerVar.UserName,
-		Password: utils.MD5(registerVar.PassWord),
-	}}
-	if err := db.CreateUser(ctx, user); err != nil {
-		// fmt.Println("fail")
-		return nil, err
+	if err := db.CreateUser(ctx, userNew); err != nil {
+		return nil, errors.New("user create error")
 	}
-	return user, nil
+	return userNew, nil
 }
 
-func LoginUser(ctx context.Context, loginVar types.UserParam) (*db.User, error) {
-	users, err := db.QueryUser(ctx, loginVar.UserName)
+func LoginUser(ctx context.Context, user db.User) (*db.User, error) {
+	users, err := db.QueryUser(ctx, user.UserName)
 	if len(users) == 0 || err != nil {
 		return nil, errors.New("user not exist")
 	}
-
 	return users[0], nil
 }
