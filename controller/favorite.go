@@ -17,11 +17,10 @@ type FavoriteActionParam struct {
 func FavoriteAction(ctx context.Context, c *app.RequestContext) {
 	userToken, exist := c.Get(mw.IdentityKey)
 	var favoriteParam FavoriteActionParam
-	c.BindAndValidate(&favoriteParam)
 
-	if favoriteParam.VideoId <= 0 {
+	if err := c.BindAndValidate(&favoriteParam); err != nil {
 		c.JSON(http.StatusOK, types.Response{StatusCode: 1,
-			StatusMsg: "video_id need > 0"})
+			StatusMsg: err.Error()})
 		return
 	}
 

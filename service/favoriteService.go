@@ -7,7 +7,7 @@ import (
 )
 
 func FavoriteAction(ctx context.Context, videoId uint, actionType uint, userToken interface{}) error {
-	users, err := db.QueryUser(ctx, userToken.(*db.User).UserName)
+	users, err := db.QueryUser(userToken.(*db.User).UserName)
 	if err != nil {
 		return errors.New("user doesn't exist in db")
 	}

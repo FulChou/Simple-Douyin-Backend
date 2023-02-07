@@ -9,7 +9,7 @@ import (
 )
 
 func VideoPublish(ctx context.Context, title, videoPath string, userToken interface{}) error {
-	users, err := db.QueryUser(ctx, userToken.(*db.User).UserName)
+	users, err := db.QueryUser(userToken.(*db.User).UserName)
 	if err != nil {
 		return errors.New("user doesn't exist in db")
 	}
@@ -40,12 +40,18 @@ type ViewVideo struct {
 	Author        Author `json:"author"`
 }
 
-func PublishListService(ctx context.Context, userId uint) ([]*ViewVideo, error) {
+func PublishListService(ctx context.Context, userId uint, userToken interface{}) ([]*ViewVideo, error) {
+	users, err := db.QueryUser(userToken.(*db.User).UserName)
+	if err != nil {
+		return nil, errors.New("user doesn't exist in db")
+	}
+	me := users[0]
+
 	videoList, err := db.VideoListByUserID(ctx, userId)
 	if err != nil || len(videoList) == 0 {
 		return nil, errors.New("fail in finding video list")
 	}
-	viewVideoList, err := Conver2ViewVideo(videoList)
+	viewVideoList, err := Conver2ViewVideo(videoList, me)
 	if err != nil {
 		return nil, errors.New("erro in createViewVideo")
 	}
@@ -53,7 +59,7 @@ func PublishListService(ctx context.Context, userId uint) ([]*ViewVideo, error) 
 
 }
 
-func Conver2ViewVideo(videoList []*db.Video) ([]*ViewVideo, error) {
+func Conver2ViewVideo(videoList []*db.Video, me *db.User) ([]*ViewVideo, error) {
 	viewVideoList := make([]*ViewVideo, 0)
 	for _, video := range videoList {
 		user, err := db.QueryUserByID(video.UserId)
@@ -63,7 +69,7 @@ func Conver2ViewVideo(videoList []*db.Video) ([]*ViewVideo, error) {
 		viewVideoList = append(viewVideoList, &ViewVideo{
 			Id: video.ID, Title: video.Title, PlayUrl: video.PlayUrl,
 			CoverUrl: video.CoverUrl, FavoriteCount: video.FavoriteCount,
-			CommentCount: video.CommentCount, IsFavorite: db.IsFavorite(user.ID, video.ID),
+			CommentCount: video.CommentCount, IsFavorite: db.IsFavorite(me.ID, video.ID),
 			Author: Author{Id: user.ID, Name: user.UserName, FollowCount: user.FollowCount,
 				FollowerCount: user.FollowerCount, IsFollow: false,
 			}})
@@ -71,7 +77,12 @@ func Conver2ViewVideo(videoList []*db.Video) ([]*ViewVideo, error) {
 	return viewVideoList, nil
 }
 
-func VideoListByTimeStr(timeStr string) ([]*ViewVideo, error) {
+func VideoListByTimeStr(timeStr string, userToken interface{}) ([]*ViewVideo, error) {
+	users, err := db.QueryUser(userToken.(*db.User).UserName)
+	if err != nil {
+		return nil, errors.New("user doesn't exist in db")
+	}
+	me := users[0]
 	var lastTime time.Time
 	if timeStr == "" {
 		lastTime = time.Now()
@@ -86,7 +97,7 @@ func VideoListByTimeStr(timeStr string) ([]*ViewVideo, error) {
 	if err != nil {
 		return nil, errors.New("video not fond, please check last time params")
 	}
-	viewVideoList, err := Conver2ViewVideo(videoList)
+	viewVideoList, err := Conver2ViewVideo(videoList, me)
 	if err != nil {
 		return nil, errors.New("erro in createViewVideo")
 	}

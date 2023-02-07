@@ -79,7 +79,7 @@ func PublishList(ctx context.Context, c *app.RequestContext) {
 		})
 		return
 	}
-	viewVideoList, err := service.PublishListService(ctx, uint(userId))
+	viewVideoList, err := service.PublishListService(ctx, uint(userId), userToken)
 	if err != nil {
 		c.JSON(http.StatusOK, VideoListResponse{
 			Response:      types.Response{StatusCode: 1, StatusMsg: err.Error()},
@@ -96,7 +96,15 @@ func PublishList(ctx context.Context, c *app.RequestContext) {
 func Feed(ctx context.Context, c *app.RequestContext) {
 	var latestTime string
 	latestTime = c.Query("latest_time")
-	viewVideoList, err := service.VideoListByTimeStr(latestTime)
+	userToken, exist := c.Get(mw.IdentityKey)
+	if userToken == nil || exist == false {
+		c.JSON(http.StatusOK, VideoListResponse{
+			Response:      types.Response{StatusCode: 1, StatusMsg: "please login"},
+			ViewVideoList: nil,
+		})
+		return
+	}
+	viewVideoList, err := service.VideoListByTimeStr(latestTime, userToken)
 	if err != nil {
 		c.JSON(http.StatusOK, VideoListResponse{
 			Response:      types.Response{StatusCode: 1, StatusMsg: err.Error()},

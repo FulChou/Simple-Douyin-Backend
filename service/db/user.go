@@ -23,7 +23,7 @@ func CreateUser(ctx context.Context, users *User) error {
 }
 
 // QueryUser query list of user info by name
-func QueryUser(ctx context.Context, userName string) ([]*User, error) {
+func QueryUser(userName string) ([]*User, error) {
 	res := make([]*User, 0)
 	if err := DB.Where("user_name = ?", userName).Find(&res).Error; err != nil {
 		return nil, err
