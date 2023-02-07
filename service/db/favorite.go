@@ -1,7 +1,6 @@
 package db
 
 import (
-	"fmt"
 	"gorm.io/gorm"
 )
 
@@ -20,7 +19,6 @@ func IsFavorite(userId, videoId uint) bool {
 	if err != nil {
 		return false
 	}
-	fmt.Printf("%#v\n", res)
 	if len(res) > 0 {
 		return true
 	}

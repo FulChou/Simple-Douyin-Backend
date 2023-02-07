@@ -26,7 +26,7 @@ func customizedRegister(r *server.Hertz) {
 	apiRouter := r.Group("/douyin")
 	apiRouter.POST("/user/login/", mw.JwtMiddleware.LoginHandler)
 	// basic apis
-	//apiRouter.GET("/feed/", controller.Feed)
+	apiRouter.GET("/feed/", controller.Feed)
 	//apiRouter.GET("/user/", controller.UserInfo)
 
 	apiRouter.POST("/user/register/", controller.Register)

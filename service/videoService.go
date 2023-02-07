@@ -4,7 +4,8 @@ import (
 	"Simple-Douyin-Backend/service/db"
 	"context"
 	"errors"
-	"fmt"
+	"strconv"
+	"time"
 )
 
 func VideoPublish(ctx context.Context, title, videoPath string, userToken interface{}) error {
@@ -40,26 +41,55 @@ type ViewVideo struct {
 	Author        Author `json:"author"`
 }
 
-func PublishListService(ctx context.Context, userId uint) ([]ViewVideo, error) {
-	videoList, err := db.VideoListBy(ctx, userId)
+func PublishListService(ctx context.Context, userId uint) ([]*ViewVideo, error) {
+	videoList, err := db.VideoListByUserID(ctx, userId)
 	if err != nil || len(videoList) == 0 {
 		return nil, errors.New("fail in finding video list")
 	}
-	viewVideoList := make([]ViewVideo, 0)
+	viewVideoList, err := Conver2ViewVideo(videoList)
+	if err != nil {
+		return nil, errors.New("erro in createViewVideo")
+	}
+	return viewVideoList, nil
 
+}
+
+func Conver2ViewVideo(videoList []*db.Video) ([]*ViewVideo, error) {
+	viewVideoList := make([]*ViewVideo, 0)
 	for _, video := range videoList {
-		user, err := db.QueryUserByID(ctx, video.UserId)
+		user, err := db.QueryUserByID(video.UserId)
 		if err != nil {
 			user = &db.User{}
 		}
-		fmt.Printf("user: %#v\n", user)
-		viewVideoList = append(viewVideoList, ViewVideo{
+		viewVideoList = append(viewVideoList, &ViewVideo{
 			Id: video.ID, Title: video.Title, PlayUrl: video.PlayUrl,
 			CoverUrl: video.CoverUrl, FavoriteCount: video.FavoriteCount,
 			CommentCount: video.CommentCount, IsFavorite: db.IsFavorite(user.ID, video.ID),
 			Author: Author{Id: user.ID, Name: user.UserName, FollowCount: user.FollowCount,
 				FollowerCount: user.FollowerCount, IsFollow: false,
 			}})
+	}
+	return viewVideoList, nil
+}
+
+func VideoListByTimeStr(timeStr string) ([]*ViewVideo, error) {
+	var lastTime time.Time
+	if timeStr == "" {
+		lastTime = time.Now()
+	} else {
+		tUnix, err := strconv.Atoi(timeStr)
+		if err != nil {
+			return nil, errors.New("params last_time format error")
+		}
+		lastTime = time.Unix(int64(tUnix), 0)
+	}
+	videoList, err := db.VideoListByTime(lastTime)
+	if err != nil {
+		return nil, errors.New("video not fond, please check last time params")
+	}
+	viewVideoList, err := Conver2ViewVideo(videoList)
+	if err != nil {
+		return nil, errors.New("erro in createViewVideo")
 	}
 	return viewVideoList, nil
 }

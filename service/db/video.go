@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"gorm.io/gorm"
+	"time"
 )
 
 type Video struct {
@@ -23,11 +24,21 @@ func CreateVideo(ctx context.Context, v Video) error {
 	return DB.WithContext(ctx).Create(&v).Error
 }
 
-func VideoListBy(ctx context.Context, userId uint) ([]*Video, error) {
-	res := make([]*Video, 0)
+func VideoListByUserID(ctx context.Context, userId uint) ([]*Video, error) {
+	videos := make([]*Video, 0)
 	if err := DB.Where("user_id = ?", userId).
-		Find(&res).Error; err != nil {
+		Find(&videos).Error; err != nil {
 		return nil, err
 	}
-	return res, nil
+	return videos, nil
+}
+
+func VideoListByTime(lastTime time.Time) ([]*Video, error) {
+	videos := make([]*Video, 0)
+	if err := DB.Where("created_at < ?", lastTime).Order("created_at DESC").
+		Find(&videos).Error; err != nil {
+		return nil, err
+	}
+	return videos, nil
+
 }

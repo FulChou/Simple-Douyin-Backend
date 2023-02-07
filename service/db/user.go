@@ -31,7 +31,7 @@ func QueryUser(ctx context.Context, userName string) ([]*User, error) {
 	return res, nil
 }
 
-func QueryUserByID(ctx context.Context, ID uint) (*User, error) {
+func QueryUserByID(ID uint) (*User, error) {
 	var res *User
 	if err := DB.Where("id = ?", ID).Find(&res).Error; err != nil {
 		return nil, err
