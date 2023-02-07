@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"gorm.io/gorm"
 )
 
@@ -10,9 +11,10 @@ type Favorite struct {
 	VideoID uint `json:"video_id"`
 }
 
-func (v *Favorite) TableName() string {
+func (f *Favorite) TableName() string {
 	return "favorite"
 }
+
 func IsFavorite(userId, videoId uint) bool {
 	res := make([]*Favorite, 0)
 	err := DB.Model(&Favorite{}).Where("user_id = ? AND video_id = ?", userId, videoId).Find(&res).Error
@@ -23,4 +25,12 @@ func IsFavorite(userId, videoId uint) bool {
 		return true
 	}
 	return false
+}
+
+func CreateFavorite(ctx context.Context, f Favorite) error {
+	return DB.WithContext(ctx).Create(&f).Error
+}
+
+func DeleteFavorite(ctx context.Context, f Favorite) error {
+	return DB.WithContext(ctx).Where("user_id = ? AND video_id = ?", f.UserID, f.VideoID).Delete(&Favorite{}).Error
 }
