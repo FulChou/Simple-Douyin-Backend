@@ -33,6 +33,7 @@ CREATE TABLE `favorite`
     `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
     `user_id` bigint unsigned DEFAULT 1 NOT NULL,
     `video_id` bigint unsigned DEFAULT 1 NOT NULL,
+    `status` int unsigned default 0 NOT NULL ,
     `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Favorite record create time',
     `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Favorite record update time',
     `deleted_at` timestamp NULL DEFAULT NULL COMMENT 'Favorite record delete time',

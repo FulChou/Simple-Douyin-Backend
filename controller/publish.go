@@ -63,8 +63,8 @@ type VideoListResponse struct {
 }
 
 func PublishList(ctx context.Context, c *app.RequestContext) {
-	userToken, _ := c.Get(mw.IdentityKey)
-	if userToken == nil {
+	userToken, exist := c.Get(mw.IdentityKey)
+	if userToken == nil || exist == false {
 		c.JSON(http.StatusOK, VideoListResponse{
 			Response:      types.Response{StatusCode: 1, StatusMsg: "please login"},
 			ViewVideoList: nil,
