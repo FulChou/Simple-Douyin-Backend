@@ -65,12 +65,18 @@ type VideoListResponse struct {
 func PublishList(ctx context.Context, c *app.RequestContext) {
 	userToken, _ := c.Get(mw.IdentityKey)
 	if userToken == nil {
-		// user need login
+		c.JSON(http.StatusOK, VideoListResponse{
+			Response:      types.Response{StatusCode: 1, StatusMsg: "please login"},
+			ViewVideoList: nil,
+		})
 		return
 	}
 	userId, err := strconv.ParseUint(c.Query("user_id"), 10, 64)
 	if err != nil {
-		// user id is error, need be number
+		c.JSON(http.StatusOK, VideoListResponse{
+			Response:      types.Response{StatusCode: 1, StatusMsg: "user_id params format is error"},
+			ViewVideoList: nil,
+		})
 		return
 	}
 	viewVideoList, err := service.PublishListService(ctx, uint(userId))
@@ -90,7 +96,6 @@ func PublishList(ctx context.Context, c *app.RequestContext) {
 func Feed(ctx context.Context, c *app.RequestContext) {
 	var latestTime string
 	latestTime = c.Query("latest_time")
-	//token, _ = c.Get(mw.IdentityKey)
 	viewVideoList, err := service.VideoListByTimeStr(latestTime)
 	if err != nil {
 		c.JSON(http.StatusOK, VideoListResponse{
@@ -104,21 +109,4 @@ func Feed(ctx context.Context, c *app.RequestContext) {
 		ViewVideoList: viewVideoList,
 	})
 
-	//userId, err := strconv.ParseUint(c.Query("user_id"), 10, 64)
-	//if err != nil {
-	//	// user id is error, need be number
-	//	return
-	//}
-	//viewVideoList, err := service.PublishListService(ctx, uint(userId))
-	//if err != nil {
-	//	c.JSON(http.StatusOK, VideoListResponse{
-	//		Response:      types.Response{StatusCode: 1, StatusMsg: err.Error()},
-	//		ViewVideoList: viewVideoList,
-	//	})
-	//	return
-	//}
-	//c.JSON(http.StatusOK, VideoListResponse{
-	//	Response:      types.Response{StatusCode: 0, StatusMsg: "success"},
-	//	ViewVideoList: viewVideoList,
-	//})
 }

@@ -15,7 +15,6 @@ func VideoPublish(ctx context.Context, title, videoPath string, userToken interf
 	}
 	user := users[0]
 
-	// create video raw in db
 	if err := db.CreateVideo(ctx, db.Video{PlayUrl: videoPath, UserId: user.ID, Title: title}); err != nil {
 		return errors.New("create video record fail in database")
 	}
@@ -79,7 +78,7 @@ func VideoListByTimeStr(timeStr string) ([]*ViewVideo, error) {
 	} else {
 		tUnix, err := strconv.Atoi(timeStr)
 		if err != nil {
-			return nil, errors.New("params last_time format error")
+			return nil, errors.New("params latest_time format error")
 		}
 		lastTime = time.Unix(int64(tUnix), 0)
 	}
