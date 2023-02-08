@@ -32,3 +32,22 @@ func FavoriteAction(ctx context.Context, videoId uint, actionType uint, userToke
 	}
 	return nil
 }
+
+func FavoriteList(ctx context.Context, userId uint, userToken interface{}) ([]*ViewVideo, error) {
+	users, err := db.QueryUser(userToken.(*db.User).UserName)
+	if err != nil {
+		return nil, errors.New("user doesn't exist in db")
+	}
+	me := users[0]
+
+	videoList, err := db.VideoListByFavorite(ctx, userId)
+	if err != nil || len(videoList) == 0 {
+		return nil, errors.New("fail in finding video list")
+	}
+	viewVideoList, err := Conver2ViewVideo(videoList, me)
+	if err != nil {
+		return nil, errors.New("error in createViewVideo")
+	}
+	return viewVideoList, nil
+
+}

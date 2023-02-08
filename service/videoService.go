@@ -40,7 +40,7 @@ type ViewVideo struct {
 	Author        Author `json:"author"`
 }
 
-func PublishListService(ctx context.Context, userId uint, userToken interface{}) ([]*ViewVideo, error) {
+func PublishList(ctx context.Context, userId uint, userToken interface{}) ([]*ViewVideo, error) {
 	users, err := db.QueryUser(userToken.(*db.User).UserName)
 	if err != nil {
 		return nil, errors.New("user doesn't exist in db")
@@ -53,7 +53,7 @@ func PublishListService(ctx context.Context, userId uint, userToken interface{})
 	}
 	viewVideoList, err := Conver2ViewVideo(videoList, me)
 	if err != nil {
-		return nil, errors.New("erro in createViewVideo")
+		return nil, errors.New("error in createViewVideo")
 	}
 	return viewVideoList, nil
 
@@ -70,8 +70,11 @@ func Conver2ViewVideo(videoList []*db.Video, me *db.User) ([]*ViewVideo, error) 
 			Id: video.ID, Title: video.Title, PlayUrl: video.PlayUrl,
 			CoverUrl: video.CoverUrl, FavoriteCount: video.FavoriteCount,
 			CommentCount: video.CommentCount, IsFavorite: db.IsFavorite(me.ID, video.ID),
-			Author: Author{Id: user.ID, Name: user.UserName, FollowCount: user.FollowCount,
-				FollowerCount: user.FollowerCount, IsFollow: false,
+			Author: Author{Id: user.ID,
+				Name:          user.UserName,
+				FollowCount:   user.FollowCount,
+				FollowerCount: user.FollowerCount,
+				IsFollow:      db.IsFollow(me.ID, user.ID),
 			}})
 	}
 	return viewVideoList, nil

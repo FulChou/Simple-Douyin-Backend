@@ -7,6 +7,7 @@ import (
 	"context"
 	"github.com/cloudwego/hertz/pkg/app"
 	"net/http"
+	"strconv"
 )
 
 type FavoriteActionParam struct {
@@ -37,4 +38,34 @@ func FavoriteAction(ctx context.Context, c *app.RequestContext) {
 	}
 	c.JSON(http.StatusOK, types.Response{StatusCode: 0,
 		StatusMsg: "success"})
+}
+
+func FavoriteList(ctx context.Context, c *app.RequestContext) {
+	userToken, exist := c.Get(mw.IdentityKey)
+	if exist == false {
+		c.JSON(http.StatusOK, types.Response{StatusCode: 1,
+			StatusMsg: "please login"})
+		return
+	}
+
+	userId, err := strconv.ParseUint(c.Query("user_id"), 10, 64)
+	if err != nil || userId <= 0 {
+		c.JSON(http.StatusOK, types.Response{StatusCode: 1,
+			StatusMsg: err.Error() + "or user_id <= 0"})
+		return
+	}
+
+	viewVideoList, err := service.FavoriteList(ctx, uint(userId), userToken)
+	if err != nil {
+		c.JSON(http.StatusOK, VideoListResponse{
+			Response:      types.Response{StatusCode: 1, StatusMsg: err.Error()},
+			ViewVideoList: viewVideoList,
+		})
+		return
+	}
+	c.JSON(http.StatusOK, VideoListResponse{
+		Response:      types.Response{StatusCode: 0, StatusMsg: "success"},
+		ViewVideoList: viewVideoList,
+	})
+
 }
