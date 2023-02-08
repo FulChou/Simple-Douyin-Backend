@@ -79,7 +79,7 @@ func PublishList(ctx context.Context, c *app.RequestContext) {
 		})
 		return
 	}
-	viewVideoList, err := service.PublishListService(ctx, uint(userId), userToken)
+	viewVideoList, err := service.PublishList(ctx, uint(userId), userToken)
 	if err != nil {
 		c.JSON(http.StatusOK, VideoListResponse{
 			Response:      types.Response{StatusCode: 1, StatusMsg: err.Error()},
