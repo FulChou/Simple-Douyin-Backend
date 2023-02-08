@@ -31,3 +31,11 @@ func CreateComment(ctx context.Context, c Comment) error {
 func DeleteComment(ctx context.Context, commentId uint) error {
 	return DB.WithContext(ctx).Where("id = ?", commentId).Delete(&Comment{}).Error
 }
+
+func CommentsByVideoID(videoId uint) ([]*Comment, error) {
+	comments := make([]*Comment, 0)
+	if err := DB.Where("video_id = ?", videoId).Find(&comments).Error; err != nil {
+		return nil, err
+	}
+	return comments, nil
+}

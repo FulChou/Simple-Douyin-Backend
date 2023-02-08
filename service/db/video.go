@@ -20,16 +20,6 @@ func (v *Video) TableName() string {
 	return VideoTableName
 }
 
-type Comment struct {
-	gorm.Model
-	UserId  uint   `json:"user_id"`
-	Content string `json:"content"`
-}
-
-func (v *Comment) TableName() string {
-	return "comment"
-}
-
 func CreateVideo(ctx context.Context, v Video) error {
 	return DB.WithContext(ctx).Create(&v).Error
 }
@@ -51,12 +41,4 @@ func VideoListByTime(lastTime time.Time) ([]*Video, error) {
 	}
 	return videos, nil
 
-}
-
-func CommentsByVideoID(videoId uint) ([]*Comment, error) {
-	comments := make([]*Comment, 0)
-	if err := DB.Where("video_id = ?", videoId).Find(&comments).Error; err != nil {
-		return nil, err
-	}
-	return comments, nil
 }
