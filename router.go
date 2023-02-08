@@ -35,7 +35,9 @@ func customizedRegister(r *server.Hertz) {
 	//// extra apis - I
 	apiRouter.POST("/favorite/action/", mw.JwtMiddleware.MiddlewareFunc(), controller.FavoriteAction)
 	apiRouter.GET("/favorite/list/", mw.JwtMiddleware.MiddlewareFunc(), controller.FavoriteList)
-	//apiRouter.POST("/comment/action/", controller.CommentAction)
+
+	apiRouter.POST("/comment/action/", mw.JwtMiddleware.MiddlewareFunc(), controller.CommentAction)
+
 	//apiRouter.GET("/comment/list/", controller.CommentList)
 	//
 	//// extra apis - II
