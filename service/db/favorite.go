@@ -38,7 +38,7 @@ func DeleteFavorite(ctx context.Context, f Favorite) error {
 func VideoListByFavorite(ctx context.Context, userId uint) ([]*Video, error) {
 	videos := make([]*Video, 0)
 	err := DB.Where("id IN (?)", DB.Table("favorite").Select("video_id").
-		Where("user_id = ?", userId)).Find(&videos).Error
+		Where("user_id = ? AND deleted_at IS NUll", userId)).Find(&videos).Error
 	if err != nil {
 		return nil, err
 	}

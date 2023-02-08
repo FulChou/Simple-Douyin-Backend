@@ -12,7 +12,7 @@ import (
 
 type FavoriteActionParam struct {
 	VideoId    uint `query:"video_id" vd:"$>0; msg:'Illegal format'"`
-	ActionType uint `query:"action_type" vd:"($ == 1 or $ == 2); msg:'Illegal value or format'"`
+	ActionType uint `query:"action_type" vd:"($ == 1 || $ == 2); msg:'Illegal value or format'"`
 }
 
 func FavoriteAction(ctx context.Context, c *app.RequestContext) {
