@@ -1,11 +1,14 @@
 package db
 
-import "gorm.io/gorm"
+import (
+	"context"
+	"gorm.io/gorm"
+)
 
 type Follow struct {
 	gorm.Model
-	UserID   uint `json:"user_id"`
-	FollowID uint `json:"follow_user_id"`
+	UserID       uint `json:"user_id"`
+	FollowUserID uint `json:"follow_user_id"`
 }
 
 func (v *Follow) TableName() string {
@@ -22,4 +25,12 @@ func IsFollow(myID uint, userID uint) bool {
 		return true
 	}
 	return false
+}
+
+func CreateRelation(ctx context.Context, f Follow) error {
+	return DB.WithContext(ctx).Create(&f).Error
+}
+
+func DeleteRelation(ctx context.Context, f Follow) error {
+	return DB.WithContext(ctx).Where("user_id = ? AND follow_user_id = ?", f.UserID, f.FollowUserID).Delete(&f).Error
 }
