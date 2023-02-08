@@ -40,7 +40,14 @@ type ViewVideo struct {
 	Author        Author `json:"author"`
 }
 
-func PublishList(ctx context.Context, userId uint, userToken interface{}) ([]*ViewVideo, error) {
+type VideoComment struct {
+	Id         uint   `json:"id"`
+	Author     Author `json:"author"`
+	Content    string `json:"content"`
+	CreateDate string `json:"create_date"`
+}
+
+func PublishListService(ctx context.Context, userId uint, userToken interface{}) ([]*ViewVideo, error) {
 	users, err := db.QueryUser(userToken.(*db.User).UserName)
 	if err != nil {
 		return nil, errors.New("user doesn't exist in db")
@@ -105,4 +112,44 @@ func VideoListByTimeStr(timeStr string, userToken interface{}) ([]*ViewVideo, er
 		return nil, errors.New("erro in createViewVideo")
 	}
 	return viewVideoList, nil
+}
+
+func CommentListService(ctx context.Context, videoId uint, userToken interface{}) ([]*VideoComment, error) {
+	users, err := db.QueryUser(userToken.(*db.User).UserName)
+	if err != nil {
+		return nil, errors.New("user doesn't exist in db")
+	}
+
+	// get initial comments
+	initComments, err := db.CommentsByVideoID(videoId)
+	if err != nil {
+		return nil, errors.New("fail in finding video comments")
+	}
+	if len(initComments) == 0 {
+		return nil, errors.New("there is no comment")
+	}
+
+	// Add user information to comments
+	me := users[0]
+	commentList := make([]*VideoComment, 0)
+	for _, comment := range initComments {
+		user, err := db.QueryUserByID(comment.UserId)
+		if err != nil {
+			user = &db.User{}
+		}
+		commentList = append(commentList, &VideoComment{
+			Id: comment.ID,
+			Author: Author{
+				Id:            user.ID,
+				Name:          user.UserName,
+				FollowCount:   user.FollowerCount,
+				FollowerCount: user.FollowerCount,
+				IsFollow:      db.IsFollow(me.ID, user.ID),
+			},
+			Content:    comment.Content,
+			CreateDate: comment.CreatedAt.String(),
+		})
+	}
+
+	return commentList, nil
 }
