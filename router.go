@@ -44,6 +44,6 @@ func customizedRegister(r *server.Hertz) {
 	apiRouter.GET("/relation/follow/list/", mw.JwtMiddleware.MiddlewareFunc(), controller.FollowList)
 	apiRouter.GET("/relation/follower/list/", mw.JwtMiddleware.MiddlewareFunc(), controller.FollowerList)
 	apiRouter.GET("/relation/friend/list/", mw.JwtMiddleware.MiddlewareFunc(), controller.FriendList)
-	//apiRouter.GET("/message/chat/", controller.MessageChat)
-	//apiRouter.POST("/message/action/", controller.MessageAction)
+	apiRouter.GET("/message/chat/", mw.JwtMiddleware.MiddlewareFunc(), controller.MessageChat)
+	apiRouter.POST("/message/action/", mw.JwtMiddleware.MiddlewareFunc(), controller.MessageAction)
 }

@@ -70,7 +70,7 @@ func CommentList(ctx context.Context, c *app.RequestContext) {
 		})
 		return
 	}
-	videoCommentList, err := service.CommentListService(ctx, uint(videoId), userToken)
+	videoCommentList, err := service.CommentList(ctx, uint(videoId), userToken)
 	if err != nil {
 		c.JSON(http.StatusOK, CommentListResponse{
 			Response:         types.Response{StatusCode: 1, StatusMsg: err.Error()},

@@ -37,7 +37,7 @@ type VideoComment struct {
 	CreateDate string `json:"create_date"`
 }
 
-func CommentListService(ctx context.Context, videoId uint, userToken interface{}) ([]*VideoComment, error) {
+func CommentList(ctx context.Context, videoId uint, userToken interface{}) ([]*VideoComment, error) {
 	users, err := db.QueryUser(userToken.(*db.User).UserName)
 	if err != nil {
 		return nil, errors.New("user doesn't exist in db")
