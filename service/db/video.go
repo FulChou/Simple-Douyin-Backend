@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"errors"
 	"gorm.io/gorm"
 	"time"
 )
@@ -40,6 +41,22 @@ func VideoListByTime(lastTime time.Time) ([]*Video, error) {
 		return nil, err
 	}
 	return videos, nil
+}
+
+func UpdateFavoriteCountBy(videoId uint, count int) error {
+	// update My_follow_count
+	video, err := GetVideoByID(videoId)
+	if err != nil {
+		return errors.New("user doesn't exist in db")
+	}
+	if count == -1 && video.FavoriteCount == 0 {
+		return errors.New("follow_count already zero")
+	}
+
+	if err := DB.Model(&Video{}).Where("id = ?", videoId).Update("favorite_count", int(video.FavoriteCount)+count).Error; err != nil {
+		return errors.New("update user follow_count failed")
+	}
+	return nil
 }
 
 func GetVideoByID(id uint) (*Video, error) {
