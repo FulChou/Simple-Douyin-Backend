@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"errors"
 	"gorm.io/gorm"
 )
 
@@ -46,4 +47,32 @@ func CheckUser(account, password string) ([]*User, error) {
 		return nil, err
 	}
 	return res, nil
+}
+
+func UpdateUserFollows(userId uint, toUserId uint, count int) error {
+	// update My_follow_count
+	user, err := QueryUserByID(userId)
+	if err != nil {
+		return errors.New("user doesn't exist in db")
+	}
+	if count == -1 && user.FollowCount == 0 {
+		return errors.New("follow_count already zero")
+	}
+
+	if err := DB.Model(&User{}).Where("id = ?", userId).Update("follow_count", int(user.FollowCount)+count).Error; err != nil {
+		return errors.New("update user follow_count failed")
+	}
+
+	// update follower_count
+	toUser, err := QueryUserByID(toUserId)
+	if err != nil {
+		return errors.New("toUser doesn't exist in db")
+	}
+	if count == -1 && user.FollowerCount == 0 {
+		return errors.New("follower_count already zero")
+	}
+	if err := DB.Model(&User{}).Where("id = ?", toUserId).Update("follower_count", int(toUser.FollowerCount)+count).Error; err != nil {
+		return errors.New("update user follower_count failed")
+	}
+	return nil
 }

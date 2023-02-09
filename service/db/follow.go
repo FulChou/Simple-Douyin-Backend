@@ -34,3 +34,21 @@ func CreateRelation(ctx context.Context, f Follow) error {
 func DeleteRelation(ctx context.Context, f Follow) error {
 	return DB.WithContext(ctx).Where("user_id = ? AND follow_user_id = ?", f.UserID, f.FollowUserID).Delete(&f).Error
 }
+
+func GetFollowList(userId uint) ([]*Follow, error) {
+	followList := make([]*Follow, 0)
+	err := DB.Where("user_id = ?", userId).Find(&followList).Error
+	if err != nil {
+		return nil, err
+	}
+	return followList, nil
+}
+
+func GetFollowerList(followerId uint) ([]*Follow, error) {
+	followerList := make([]*Follow, 0)
+	err := DB.Where("follow_user_id = ?", followerId).Find(&followerList).Error
+	if err != nil {
+		return nil, err
+	}
+	return followerList, nil
+}

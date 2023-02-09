@@ -41,3 +41,67 @@ func RelationAction(ctx context.Context, c *app.RequestContext) {
 	c.JSON(http.StatusOK, types.Response{StatusCode: 0,
 		StatusMsg: "success"})
 }
+
+type FollowListResponse struct {
+	types.Response
+	FollowList []*types.User `json:"follow_list"`
+}
+
+func FollowList(ctx context.Context, c *app.RequestContext) {
+	userToken, exist := c.Get(mw.IdentityKey)
+	if exist == false {
+		c.JSON(http.StatusOK, types.Response{StatusCode: 1,
+			StatusMsg: "please login"})
+		return
+	}
+	userId, err := strconv.ParseUint(c.Query("user_id"), 10, 64)
+	if err != nil || userId <= 0 {
+		c.JSON(http.StatusOK, types.Response{StatusCode: 1,
+			StatusMsg: err.Error() + "or user_id <= 0"})
+		return
+	}
+	followList, err := service.FollowList(uint(userId), userToken)
+	if err != nil {
+		c.JSON(http.StatusOK, FollowListResponse{
+			Response:   types.Response{StatusCode: 1, StatusMsg: err.Error()},
+			FollowList: followList,
+		})
+		return
+	}
+	c.JSON(http.StatusOK, FollowListResponse{
+		Response:   types.Response{StatusCode: 1, StatusMsg: "success"},
+		FollowList: followList,
+	})
+}
+
+type FollowerListResponse struct {
+	types.Response
+	FollowerList []*types.User `json:"follower_list"`
+}
+
+func FollowerList(ctx context.Context, c *app.RequestContext) {
+	userToken, exist := c.Get(mw.IdentityKey)
+	if exist == false {
+		c.JSON(http.StatusOK, types.Response{StatusCode: 1,
+			StatusMsg: "please login"})
+		return
+	}
+	userId, err := strconv.ParseUint(c.Query("user_id"), 10, 64)
+	if err != nil || userId <= 0 {
+		c.JSON(http.StatusOK, types.Response{StatusCode: 1,
+			StatusMsg: err.Error() + "or user_id <= 0"})
+		return
+	}
+	followerList, err := service.FollowerList(uint(userId), userToken)
+	if err != nil {
+		c.JSON(http.StatusOK, FollowerListResponse{
+			Response:     types.Response{StatusCode: 1, StatusMsg: err.Error()},
+			FollowerList: followerList,
+		})
+		return
+	}
+	c.JSON(http.StatusOK, FollowerListResponse{
+		Response:     types.Response{StatusCode: 1, StatusMsg: "success"},
+		FollowerList: followerList,
+	})
+}
