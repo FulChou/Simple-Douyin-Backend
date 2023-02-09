@@ -12,10 +12,20 @@ func CommentAction(ctx context.Context, videoId, actionType, commentId uint, com
 		return errors.New("user doesn't exist in db")
 	}
 	user := users[0]
+	_, err = db.GetVideoByID(videoId)
+	if err != nil {
+		return err
+	}
+
 	switch {
 	case actionType == 1:
 		if err := db.CreateComment(ctx, db.Comment{VideoID: videoId, UserID: user.ID, Content: commentText}); err != nil {
 			return errors.New("create this comment raise error in db")
+		}
+		// Update comment_count in Table video
+		err := db.UpdateCommentCount(videoId, 1)
+		if err != nil {
+			return err
 		}
 	case actionType == 2:
 		if res, err := db.FindComment(commentId); res == nil || err != nil {
@@ -23,6 +33,10 @@ func CommentAction(ctx context.Context, videoId, actionType, commentId uint, com
 		}
 		if err := db.DeleteComment(ctx, commentId); err != nil {
 			return errors.New("delete this comment raise error in db")
+		}
+		err := db.UpdateCommentCount(videoId, 1)
+		if err != nil {
+			return err
 		}
 	default:
 		return errors.New("not support this action_type")
