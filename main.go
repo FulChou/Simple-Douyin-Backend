@@ -3,6 +3,7 @@
 package main
 
 import (
+	"Simple-Douyin-Backend/messageServer"
 	"Simple-Douyin-Backend/mw"
 	"Simple-Douyin-Backend/service/db"
 	"github.com/cloudwego/hertz/pkg/app/server"
@@ -10,9 +11,9 @@ import (
 
 func main() {
 	h := server.Default(server.WithHostPorts("127.0.0.1:8080"))
-
 	db.Init()
 	mw.InitJwt()
 	register(h)
+	go messageServer.RunMessageServer()
 	h.Spin()
 }
