@@ -12,6 +12,12 @@ func FavoriteAction(ctx context.Context, videoId uint, actionType uint, userToke
 		return errors.New("user doesn't exist in db")
 	}
 	user := users[0]
+
+	video, err := db.GetVideoByID(videoId)
+	if err != nil || video == nil {
+		return errors.New("video doesn't exist in db")
+	}
+
 	switch {
 	case actionType == 1:
 		if db.IsFavorite(user.ID, videoId) == true {

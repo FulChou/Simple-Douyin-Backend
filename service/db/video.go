@@ -40,5 +40,12 @@ func VideoListByTime(lastTime time.Time) ([]*Video, error) {
 		return nil, err
 	}
 	return videos, nil
+}
 
+func GetVideoByID(id uint) (*Video, error) {
+	var video *Video
+	if err := DB.Where("id = ?", id).First(&video).Error; err != nil {
+		return nil, err
+	}
+	return video, nil
 }

@@ -34,7 +34,7 @@ func QueryUser(userName string) ([]*User, error) {
 
 func QueryUserByID(ID uint) (*User, error) {
 	var res *User
-	if err := DB.Where("id = ?", ID).Find(&res).Error; err != nil {
+	if err := DB.Where("id = ?", ID).First(&res).Error; err != nil {
 		return nil, err
 	}
 	return res, nil
