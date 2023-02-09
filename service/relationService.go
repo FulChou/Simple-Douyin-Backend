@@ -2,7 +2,6 @@ package service
 
 import (
 	"Simple-Douyin-Backend/service/db"
-	"Simple-Douyin-Backend/types"
 	"context"
 	"errors"
 )
@@ -46,7 +45,15 @@ func RelationAction(ctx context.Context, toUserId uint, actionType uint, userTok
 	return nil
 }
 
-func FollowList(userId uint, userToken interface{}) ([]*types.User, error) {
+type ViewUser struct {
+	ID            uint   `json:"id"`
+	Name          string `json:"name"`
+	FollowCount   uint64 `json:"follow_count"`
+	FollowerCount uint64 `json:"follower_count"`
+	IsFollow      bool   `json:"is_follow"`
+}
+
+func FollowList(userId uint, userToken interface{}) ([]*ViewUser, error) {
 	users, err := db.QueryUser(userToken.(*db.User).UserName)
 	if err != nil {
 		return nil, errors.New("user doesn't exist in db")
@@ -62,13 +69,13 @@ func FollowList(userId uint, userToken interface{}) ([]*types.User, error) {
 
 	// Add user information to follow
 	me := users[0]
-	followList := make([]*types.User, 0)
+	followList := make([]*ViewUser, 0)
 	for _, follow := range initFollows {
 		user, err := db.QueryUserByID(follow.FollowUserID)
 		if err != nil {
 			user = &db.User{}
 		}
-		followList = append(followList, &types.User{
+		followList = append(followList, &ViewUser{
 			ID:            user.ID,
 			Name:          user.UserName,
 			FollowCount:   user.FollowCount,
@@ -79,7 +86,7 @@ func FollowList(userId uint, userToken interface{}) ([]*types.User, error) {
 	return followList, nil
 }
 
-func FollowerList(userId uint, userToken interface{}) ([]*types.User, error) {
+func FollowerList(userId uint, userToken interface{}) ([]*ViewUser, error) {
 	users, err := db.QueryUser(userToken.(*db.User).UserName)
 	if err != nil {
 		return nil, errors.New("user doesn't exist in db")
@@ -95,13 +102,13 @@ func FollowerList(userId uint, userToken interface{}) ([]*types.User, error) {
 
 	// Add user information to follower
 	me := users[0]
-	followerList := make([]*types.User, 0)
+	followerList := make([]*ViewUser, 0)
 	for _, follow := range initFollowers {
 		user, err := db.QueryUserByID(follow.UserID)
 		if err != nil {
 			user = &db.User{}
 		}
-		followerList = append(followerList, &types.User{
+		followerList = append(followerList, &ViewUser{
 			ID:            user.ID,
 			Name:          user.UserName,
 			FollowCount:   user.FollowCount,

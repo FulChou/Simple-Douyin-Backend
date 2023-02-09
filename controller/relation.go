@@ -44,7 +44,7 @@ func RelationAction(ctx context.Context, c *app.RequestContext) {
 
 type FollowListResponse struct {
 	types.Response
-	FollowList []*types.User `json:"follow_list"`
+	FollowList []*service.ViewUser `json:"follow_list"`
 }
 
 func FollowList(ctx context.Context, c *app.RequestContext) {
@@ -76,7 +76,7 @@ func FollowList(ctx context.Context, c *app.RequestContext) {
 
 type FollowerListResponse struct {
 	types.Response
-	FollowerList []*types.User `json:"follower_list"`
+	FollowerList []*service.ViewUser `json:"follower_list"`
 }
 
 func FollowerList(ctx context.Context, c *app.RequestContext) {
