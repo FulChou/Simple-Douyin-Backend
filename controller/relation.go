@@ -69,7 +69,7 @@ func FollowList(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	c.JSON(http.StatusOK, FollowListResponse{
-		Response:   types.Response{StatusCode: 1, StatusMsg: "success"},
+		Response:   types.Response{StatusCode: 0, StatusMsg: "success"},
 		FollowList: followList,
 	})
 }
@@ -101,7 +101,40 @@ func FollowerList(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	c.JSON(http.StatusOK, FollowerListResponse{
-		Response:     types.Response{StatusCode: 1, StatusMsg: "success"},
+		Response:     types.Response{StatusCode: 0, StatusMsg: "success"},
 		FollowerList: followerList,
+	})
+}
+
+type FriendListResponse struct {
+	types.Response
+	FriendList []*service.ViewUser `json:"friend_list"`
+}
+
+func FriendList(ctx context.Context, c *app.RequestContext) {
+	userToken, exist := c.Get(mw.IdentityKey)
+	if exist == false {
+		c.JSON(http.StatusOK, types.Response{StatusCode: 1,
+			StatusMsg: "please login"})
+		return
+	}
+	userId, err := strconv.ParseUint(c.Query("user_id"), 10, 64)
+	if err != nil || userId <= 0 {
+		c.JSON(http.StatusOK, types.Response{StatusCode: 1,
+			StatusMsg: err.Error() + "or user_id <= 0"})
+		return
+	}
+
+	friendList, err := service.FriendList(uint(userId), userToken)
+	if err != nil {
+		c.JSON(http.StatusOK, FriendListResponse{
+			Response:   types.Response{StatusCode: 1, StatusMsg: err.Error()},
+			FriendList: friendList,
+		})
+		return
+	}
+	c.JSON(http.StatusOK, FriendListResponse{
+		Response:   types.Response{StatusCode: 0, StatusMsg: "success"},
+		FriendList: friendList,
 	})
 }
