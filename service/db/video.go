@@ -66,3 +66,17 @@ func GetVideoByID(id uint) (*Video, error) {
 	}
 	return video, nil
 }
+
+func UpdateCommentCount(videoId uint, count int) error {
+	video, err := GetVideoByID(videoId)
+	if err != nil {
+		return err
+	}
+	if count == -1 && video.CommentCount == 0 {
+		return errors.New("comment_count already zero")
+	}
+	if err := DB.Model(&Video{}).Where("id = ?", videoId).Update("comment_count", int(video.CommentCount)+count).Error; err != nil {
+		return errors.New("update comment_count failed")
+	}
+	return nil
+}

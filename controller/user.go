@@ -7,7 +7,6 @@ import (
 	"Simple-Douyin-Backend/types"
 	"Simple-Douyin-Backend/utils"
 	"context"
-	"fmt"
 	"github.com/cloudwego/hertz/pkg/app"
 	"net/http"
 	"strconv"
@@ -71,8 +70,6 @@ func UserInfo(ctx context.Context, c *app.RequestContext) {
 
 	userId, err := strconv.ParseUint(c.Query("user_id"), 10, 64)
 
-	fmt.Println("in UserInfo:", userToken, userId)
-
 	if err != nil {
 		c.JSON(http.StatusOK, UserInfoResponse{
 			Response: types.Response{StatusCode: 1, StatusMsg: "user_id params format is error"},
@@ -82,8 +79,6 @@ func UserInfo(ctx context.Context, c *app.RequestContext) {
 	}
 	userInfo, err := service.GetUserInfo(ctx, uint(userId), userToken)
 
-	fmt.Println("in UserInfo:", userInfo)
-
 	if err != nil {
 		c.JSON(http.StatusOK, UserInfoResponse{
 			Response: types.Response{StatusCode: 1, StatusMsg: err.Error()},
@@ -91,10 +86,6 @@ func UserInfo(ctx context.Context, c *app.RequestContext) {
 		})
 		return
 	}
-	fmt.Printf("%#v", UserInfoResponse{
-		Response: types.Response{StatusCode: 0, StatusMsg: "success"},
-		User:     userInfo,
-	})
 	c.JSON(http.StatusOK, UserInfoResponse{
 		Response: types.Response{StatusCode: 0, StatusMsg: "success"},
 		User:     userInfo,
