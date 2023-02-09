@@ -30,6 +30,13 @@ func CommentAction(ctx context.Context, videoId, actionType, commentId uint, com
 	return nil
 }
 
+type VideoComment struct {
+	Id         uint   `json:"id"`
+	Author     Author `json:"author"`
+	Content    string `json:"content"`
+	CreateDate string `json:"create_date"`
+}
+
 func CommentListService(ctx context.Context, videoId uint, userToken interface{}) ([]*VideoComment, error) {
 	users, err := db.QueryUser(userToken.(*db.User).UserName)
 	if err != nil {

@@ -40,13 +40,6 @@ type ViewVideo struct {
 	Author        Author `json:"author"`
 }
 
-type VideoComment struct {
-	Id         uint   `json:"id"`
-	Author     Author `json:"author"`
-	Content    string `json:"content"`
-	CreateDate string `json:"create_date"`
-}
-
 func PublishList(ctx context.Context, userId uint, userToken interface{}) ([]*ViewVideo, error) {
 	users, err := db.QueryUser(userToken.(*db.User).UserName)
 	if err != nil {
