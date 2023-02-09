@@ -113,7 +113,7 @@ func UserInfo(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	c.JSON(http.StatusOK, UserInfoResponse{
-		Response: types.Response{StatusCode: 1, StatusMsg: "success"},
+		Response: types.Response{StatusCode: 0, StatusMsg: "success"},
 		Author:   userInfo,
 	})
 }

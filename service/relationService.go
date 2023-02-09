@@ -12,6 +12,11 @@ func RelationAction(ctx context.Context, toUserId uint, actionType uint, userTok
 		return errors.New("user doesn't exist in db")
 	}
 	user := users[0]
+	_, err = db.QueryUserByID(toUserId)
+	// fmt.Println(toUser)
+	if err != nil {
+		return errors.New("toUser doesn't exist in db")
+	}
 	switch {
 	case actionType == 1:
 		if db.IsFollow(user.ID, toUserId) == true {
@@ -61,7 +66,7 @@ func FollowList(userId uint, userToken interface{}) ([]*ViewUser, error) {
 	// get initial follows
 	initFollows, err := db.GetFollowList(userId)
 	if err != nil {
-		return nil, errors.New("fail in finding video comments")
+		return nil, errors.New("fail in finding follows")
 	}
 	if len(initFollows) == 0 {
 		return nil, errors.New("user has no follow")
@@ -94,7 +99,7 @@ func FollowerList(userId uint, userToken interface{}) ([]*ViewUser, error) {
 	// get initial follows
 	initFollowers, err := db.GetFollowerList(userId)
 	if err != nil {
-		return nil, errors.New("fail in finding video comments")
+		return nil, errors.New("fail in finding Followers")
 	}
 	if len(initFollowers) == 0 {
 		return nil, errors.New("user has no follower")
@@ -117,4 +122,37 @@ func FollowerList(userId uint, userToken interface{}) ([]*ViewUser, error) {
 		})
 	}
 	return followerList, nil
+}
+
+func FriendList(userId uint, userToken interface{}) ([]*ViewUser, error) {
+	users, err := db.QueryUser(userToken.(*db.User).UserName)
+	if err != nil {
+		return nil, errors.New("user doesn't exist in db")
+	}
+	// get initial friends
+	initFriends, err := db.GetFriendList(userId)
+	if err != nil {
+		return nil, errors.New("fail in finding Friends")
+	}
+	if len(initFriends) == 0 {
+		return nil, errors.New("user has no friend")
+	}
+
+	// Add user information to friends
+	me := users[0]
+	friendList := make([]*ViewUser, 0)
+	for _, follow := range initFriends {
+		user, err := db.QueryUserByID(follow.UserID)
+		if err != nil {
+			user = &db.User{}
+		}
+		friendList = append(friendList, &ViewUser{
+			ID:            user.ID,
+			Name:          user.UserName,
+			FollowCount:   user.FollowCount,
+			FollowerCount: user.FollowerCount,
+			IsFollow:      db.IsFollow(me.ID, user.ID),
+		})
+	}
+	return friendList, nil
 }

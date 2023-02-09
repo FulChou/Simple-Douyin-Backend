@@ -66,3 +66,17 @@ CREATE TABLE `comment`
     KEY          `idx_user_id` (`user_id`) COMMENT 'user_id index',
     KEY          `idx_video_id` (`video_id`) COMMENT 'video_id index'
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='comment table';
+
+CREATE TABLE `message`
+(
+    `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
+    `user_id` bigint unsigned DEFAULT 1 NOT NULL,
+    `to_user_id` bigint unsigned DEFAULT 1 NOT NULL,
+    `content` text DEFAULT NULL,
+    `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'message record create time',
+    `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'message record update time',
+    `deleted_at` timestamp NULL DEFAULT NULL COMMENT 'message record delete time',
+    PRIMARY KEY (`id`),
+    KEY          `idx_user_id` (`user_id`) COMMENT 'user_id index',
+    KEY          `idx_to_user_id` (`to_user_id`) COMMENT 'to_user_id index'
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='chat table';
