@@ -52,3 +52,13 @@ func GetFollowerList(followerId uint) ([]*Follow, error) {
 	}
 	return followerList, nil
 }
+
+func GetFriendList(userId uint) ([]*Follow, error) {
+	friendList := make([]*Follow, 0)
+	err := DB.Where("user_id = ? AND follow_user_id IN (?)", userId, DB.Table("follow").Select("follow_user_id").
+		Where("user_id = ? AND deleted_at IS NUll", userId)).Find(&friendList).Error
+	if err != nil {
+		return nil, err
+	}
+	return friendList, nil
+}
