@@ -44,7 +44,7 @@ func RelationAction(ctx context.Context, c *app.RequestContext) {
 
 type FollowListResponse struct {
 	types.Response
-	FollowList []*service.ViewUser `json:"follow_list"`
+	UserList []*service.ViewUser `json:"user_list"`
 }
 
 func FollowList(ctx context.Context, c *app.RequestContext) {
@@ -55,7 +55,7 @@ func FollowList(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	userId, err := strconv.ParseUint(c.Query("user_id"), 10, 64)
-	if err != nil || userId <= 0 {
+	if err != nil || userId < 0 {
 		c.JSON(http.StatusOK, types.Response{StatusCode: 1,
 			StatusMsg: err.Error() + "or user_id <= 0"})
 		return
@@ -63,20 +63,20 @@ func FollowList(ctx context.Context, c *app.RequestContext) {
 	followList, err := service.FollowList(uint(userId), userToken)
 	if err != nil {
 		c.JSON(http.StatusOK, FollowListResponse{
-			Response:   types.Response{StatusCode: 1, StatusMsg: err.Error()},
-			FollowList: followList,
+			Response: types.Response{StatusCode: 1, StatusMsg: err.Error()},
+			UserList: followList,
 		})
 		return
 	}
 	c.JSON(http.StatusOK, FollowListResponse{
-		Response:   types.Response{StatusCode: 0, StatusMsg: "success"},
-		FollowList: followList,
+		Response: types.Response{StatusCode: 0, StatusMsg: "success"},
+		UserList: followList,
 	})
 }
 
 type FollowerListResponse struct {
 	types.Response
-	FollowerList []*service.ViewUser `json:"follower_list"`
+	UserList []*service.ViewUser `json:"user_list"`
 }
 
 func FollowerList(ctx context.Context, c *app.RequestContext) {
@@ -95,20 +95,20 @@ func FollowerList(ctx context.Context, c *app.RequestContext) {
 	followerList, err := service.FollowerList(uint(userId), userToken)
 	if err != nil {
 		c.JSON(http.StatusOK, FollowerListResponse{
-			Response:     types.Response{StatusCode: 1, StatusMsg: err.Error()},
-			FollowerList: followerList,
+			Response: types.Response{StatusCode: 1, StatusMsg: err.Error()},
+			UserList: followerList,
 		})
 		return
 	}
 	c.JSON(http.StatusOK, FollowerListResponse{
-		Response:     types.Response{StatusCode: 0, StatusMsg: "success"},
-		FollowerList: followerList,
+		Response: types.Response{StatusCode: 0, StatusMsg: "success"},
+		UserList: followerList,
 	})
 }
 
 type FriendListResponse struct {
 	types.Response
-	FriendList []*service.ViewUser `json:"friend_list"`
+	UserList []*service.ViewUser `json:"user_list"`
 }
 
 func FriendList(ctx context.Context, c *app.RequestContext) {
@@ -128,13 +128,13 @@ func FriendList(ctx context.Context, c *app.RequestContext) {
 	friendList, err := service.FriendList(uint(userId), userToken)
 	if err != nil {
 		c.JSON(http.StatusOK, FriendListResponse{
-			Response:   types.Response{StatusCode: 1, StatusMsg: err.Error()},
-			FriendList: friendList,
+			Response: types.Response{StatusCode: 1, StatusMsg: err.Error()},
+			UserList: friendList,
 		})
 		return
 	}
 	c.JSON(http.StatusOK, FriendListResponse{
-		Response:   types.Response{StatusCode: 0, StatusMsg: "success"},
-		FriendList: friendList,
+		Response: types.Response{StatusCode: 0, StatusMsg: "success"},
+		UserList: friendList,
 	})
 }

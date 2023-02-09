@@ -50,36 +50,36 @@ func CommentAction(ctx context.Context, c *app.RequestContext) {
 
 type CommentListResponse struct {
 	types.Response
-	VideoCommentList []*service.VideoComment `json:"video_comment"`
+	CommentList []*service.VideoComment `json:"comment_list"`
 }
 
 func CommentList(ctx context.Context, c *app.RequestContext) {
 	userToken, exist := c.Get(mw.IdentityKey)
 	if userToken == nil || exist == false {
 		c.JSON(http.StatusOK, CommentListResponse{
-			Response:         types.Response{StatusCode: 1, StatusMsg: "please login"},
-			VideoCommentList: nil,
+			Response:    types.Response{StatusCode: 1, StatusMsg: "please login"},
+			CommentList: nil,
 		})
 		return
 	}
 	videoId, err := strconv.ParseUint(c.Query("video_id"), 10, 64)
 	if err != nil || videoId <= 0 {
 		c.JSON(http.StatusOK, CommentListResponse{
-			Response:         types.Response{StatusCode: 1, StatusMsg: "video_id params format is error or value <= 0"},
-			VideoCommentList: nil,
+			Response:    types.Response{StatusCode: 1, StatusMsg: "video_id params format is error or value <= 0"},
+			CommentList: nil,
 		})
 		return
 	}
 	videoCommentList, err := service.CommentList(ctx, uint(videoId), userToken)
 	if err != nil {
 		c.JSON(http.StatusOK, CommentListResponse{
-			Response:         types.Response{StatusCode: 1, StatusMsg: err.Error()},
-			VideoCommentList: videoCommentList,
+			Response:    types.Response{StatusCode: 1, StatusMsg: err.Error()},
+			CommentList: videoCommentList,
 		})
 		return
 	}
 	c.JSON(http.StatusOK, CommentListResponse{
-		Response:         types.Response{StatusCode: 0, StatusMsg: "success"},
-		VideoCommentList: videoCommentList,
+		Response:    types.Response{StatusCode: 0, StatusMsg: "success"},
+		CommentList: videoCommentList,
 	})
 }

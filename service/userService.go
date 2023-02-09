@@ -8,7 +8,6 @@ import (
 
 // RegisterUser service func
 func RegisterUser(ctx context.Context, userNew *db.User) (*db.User, error) {
-	// token := registerVar.UserName + registerVar.PassWord
 	// check database is user exist by username
 	users, err := db.QueryUser(userNew.UserName)
 	if len(users) != 0 || err != nil {
@@ -20,15 +19,25 @@ func RegisterUser(ctx context.Context, userNew *db.User) (*db.User, error) {
 	return userNew, nil
 }
 
-func LoginUser(ctx context.Context, user db.User) (*db.User, error) {
-	users, err := db.QueryUser(user.UserName)
-	if len(users) == 0 || err != nil {
-		return nil, errors.New("user not exist")
-	}
-	return users[0], nil
-}
-
 func GetUserInfo(ctx context.Context, userId uint, userToken interface{}) (Author, error) {
+
+	if userId == 0 {
+		var userInfo Author
+		users, err := db.QueryUser(userToken.(*db.User).UserName)
+		if err != nil {
+			return Author{}, errors.New("meUser doesn't exist in db")
+		}
+		me := users[0]
+		userInfo = Author{
+			Id:            me.ID,
+			Name:          me.UserName,
+			FollowCount:   me.FollowCount,
+			FollowerCount: me.FollowerCount,
+			IsFollow:      db.IsFollow(me.ID, me.ID),
+		}
+		return userInfo, nil
+	}
+
 	user, err := db.QueryUserByID(userId)
 	if err != nil || user == nil {
 		return Author{}, errors.New("fail in finding user Info")

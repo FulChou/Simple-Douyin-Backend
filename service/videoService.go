@@ -81,22 +81,30 @@ func Conver2ViewVideo(videoList []*db.Video, me *db.User) ([]*ViewVideo, error) 
 }
 
 func VideoListByTimeStr(timeStr string, userToken interface{}) ([]*ViewVideo, error) {
-	users, err := db.QueryUser(userToken.(*db.User).UserName)
-	if err != nil {
-		return nil, errors.New("user doesn't exist in db")
+	me := new(db.User)
+
+	if userToken != nil {
+		users, err := db.QueryUser(userToken.(*db.User).UserName)
+		if err != nil {
+			return nil, errors.New("user doesn't exist in db")
+		}
+		me = users[0]
 	}
-	me := users[0]
+
 	var lastTime time.Time
 	if timeStr == "" {
 		lastTime = time.Now()
 	} else {
+		timeStr = timeStr[:len(timeStr)-3]
 		tUnix, err := strconv.Atoi(timeStr)
 		if err != nil {
 			return nil, errors.New("params latest_time format error")
 		}
 		lastTime = time.Unix(int64(tUnix), 0)
 	}
+
 	videoList, err := db.VideoListByTime(lastTime)
+
 	if err != nil {
 		return nil, errors.New("video not fond, please check last time params")
 	}

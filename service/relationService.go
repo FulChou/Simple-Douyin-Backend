@@ -64,6 +64,9 @@ func FollowList(userId uint, userToken interface{}) ([]*ViewUser, error) {
 		return nil, errors.New("user doesn't exist in db")
 	}
 	// get initial follows
+	if userId == 0 {
+		userId = users[0].ID
+	}
 	initFollows, err := db.GetFollowList(userId)
 	if err != nil {
 		return nil, errors.New("fail in finding follows")
@@ -95,6 +98,9 @@ func FollowerList(userId uint, userToken interface{}) ([]*ViewUser, error) {
 	users, err := db.QueryUser(userToken.(*db.User).UserName)
 	if err != nil {
 		return nil, errors.New("user doesn't exist in db")
+	}
+	if userId == 0 {
+		userId = users[0].ID
 	}
 	// get initial follows
 	initFollowers, err := db.GetFollowerList(userId)
@@ -128,6 +134,9 @@ func FriendList(userId uint, userToken interface{}) ([]*ViewUser, error) {
 	users, err := db.QueryUser(userToken.(*db.User).UserName)
 	if err != nil {
 		return nil, errors.New("user doesn't exist in db")
+	}
+	if userId == 0 {
+		userId = users[0].ID
 	}
 	// get initial friends
 	initFriends, err := db.GetFriendList(userId)

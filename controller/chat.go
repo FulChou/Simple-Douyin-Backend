@@ -48,7 +48,7 @@ func MessageAction(ctx context.Context, c *app.RequestContext) {
 
 type MessageChatResponse struct {
 	types.Response
-	MessageList []*service.ViewMessage `json:"view_message"`
+	MessageList []*service.ViewMessage `json:"message_list"`
 }
 
 func MessageChat(ctx context.Context, c *app.RequestContext) {
@@ -69,6 +69,7 @@ func MessageChat(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	messageList, err := service.MessageList(uint(toUserId), userToken)
+
 	if err != nil {
 		c.JSON(http.StatusOK, MessageChatResponse{
 			Response:    types.Response{StatusCode: 1, StatusMsg: err.Error()},

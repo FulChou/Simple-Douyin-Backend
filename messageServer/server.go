@@ -1,7 +1,6 @@
 package messageServer
 
 import (
-	"Simple-Douyin-Backend/service/db"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -76,7 +75,7 @@ func process(conn net.Conn) {
 			continue
 		}
 
-		err = db.CreateMessage(db.Message{UserID: uint(event.UserId), ToUserID: uint(event.ToUserId), Content: event.MsgContent})
+		// err = db.CreateMessage(db.Message{UserID: uint(event.UserId), ToUserID: uint(event.ToUserId), Content: event.MsgContent})
 		if err != nil {
 			fmt.Println("store message to db fail")
 		}

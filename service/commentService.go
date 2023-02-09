@@ -32,7 +32,7 @@ func CommentAction(ctx context.Context, videoId, actionType, commentId uint, com
 
 type VideoComment struct {
 	Id         uint   `json:"id"`
-	Author     Author `json:"author"`
+	User       Author `json:"user"`
 	Content    string `json:"content"`
 	CreateDate string `json:"create_date"`
 }
@@ -62,7 +62,7 @@ func CommentList(ctx context.Context, videoId uint, userToken interface{}) ([]*V
 		}
 		commentList = append(commentList, &VideoComment{
 			Id: comment.ID,
-			Author: Author{
+			User: Author{
 				Id:            user.ID,
 				Name:          user.UserName,
 				FollowCount:   user.FollowerCount,
