@@ -26,12 +26,18 @@ func FavoriteAction(ctx context.Context, videoId uint, actionType uint, userToke
 		if err := db.CreateFavorite(ctx, db.Favorite{VideoID: videoId, UserID: user.ID}); err != nil {
 			return errors.New("favorite this video raise error in db")
 		}
+		if err := db.UpdateFavoriteCountBy(videoId, 1); err != nil {
+			return err
+		}
 	case actionType == 2:
 		if db.IsFavorite(user.ID, videoId) == false {
 			return errors.New("all ready unlike this video")
 		}
 		if err := db.DeleteFavorite(ctx, db.Favorite{VideoID: videoId, UserID: user.ID}); err != nil {
 			return errors.New("unlike this video raise error in db")
+		}
+		if err := db.UpdateFavoriteCountBy(videoId, -1); err != nil {
+			return err
 		}
 	default:
 		return errors.New("not support this action_type")

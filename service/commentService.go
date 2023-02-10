@@ -34,7 +34,7 @@ func CommentAction(ctx context.Context, videoId, actionType, commentId uint, com
 		if err := db.DeleteComment(ctx, commentId); err != nil {
 			return errors.New("delete this comment raise error in db")
 		}
-		err := db.UpdateCommentCount(videoId, 1)
+		err := db.UpdateCommentCount(videoId, -1)
 		if err != nil {
 			return err
 		}

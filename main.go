@@ -11,7 +11,8 @@ import (
 )
 
 func main() {
-	h := server.Default(server.WithHostPorts("0.0.0.0:8080"))
+	h := server.Default(server.WithHostPorts("127.0.0.1:8080"))
+	h.StaticFile("/main", "./static/bear.mp4")
 	db.Init()
 	minio.Init()
 	mw.InitJwt()
