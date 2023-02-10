@@ -6,12 +6,14 @@ import (
 	"Simple-Douyin-Backend/messageServer"
 	"Simple-Douyin-Backend/mw"
 	"Simple-Douyin-Backend/service/db"
+	"Simple-Douyin-Backend/service/minio"
 	"github.com/cloudwego/hertz/pkg/app/server"
 )
 
 func main() {
 	h := server.Default(server.WithHostPorts("0.0.0.0:8080"))
 	db.Init()
+	minio.Init()
 	mw.InitJwt()
 	register(h)
 	go messageServer.RunMessageServer()

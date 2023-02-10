@@ -8,6 +8,7 @@ import (
 	"time"
 )
 
+// VideoPublish save video information to MySQL
 func VideoPublish(ctx context.Context, title, videoPath string, userToken interface{}) error {
 	users, err := db.QueryUser(userToken.(*db.User).UserName)
 	if err != nil {

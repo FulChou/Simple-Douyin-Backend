@@ -3,10 +3,12 @@ package controller
 import (
 	"Simple-Douyin-Backend/mw"
 	"Simple-Douyin-Backend/service"
+	"Simple-Douyin-Backend/service/minio"
 	"Simple-Douyin-Backend/types"
 	"context"
 	"fmt"
 	"github.com/cloudwego/hertz/pkg/app"
+	"log"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -31,9 +33,12 @@ func Publish(ctx context.Context, c *app.RequestContext) {
 		})
 		return
 	}
+
 	filename := filepath.Base(data.Filename)
-	finalName := fmt.Sprintf("%d_%s", 0, filename)
-	savePath := filepath.Join("./static/", title+"_"+finalName)
+	finalName := fmt.Sprintf("%s_%s", title, filename)
+	savePath := filepath.Join("./static/", finalName)
+
+	// save to local
 	if err := c.SaveUploadedFile(data, savePath); err != nil {
 		c.JSON(http.StatusOK, types.Response{
 			StatusCode: 1,
@@ -42,7 +47,26 @@ func Publish(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	if err := service.VideoPublish(ctx, title, savePath, userToken); err != nil {
+	// save to minio
+	bucketName := "dousheng"
+	if err := minio.FileUploader(ctx, bucketName, finalName, savePath); err != nil {
+		fmt.Println("save to minio failed")
+		c.JSON(http.StatusOK, types.Response{
+			StatusCode: 1,
+			StatusMsg:  err.Error(),
+		})
+		return
+	}
+
+	// get URL from minio
+	url, err := minio.GetFileUrl(bucketName, finalName, 0)
+	if err != nil {
+		log.Printf("get url failed")
+	} else {
+		log.Printf("User uploaded a file", url)
+	}
+
+	if err := service.VideoPublish(ctx, title, url.String(), userToken); err != nil {
 		c.JSON(http.StatusOK, types.Response{
 			StatusCode: 1,
 			StatusMsg:  err.Error(),
