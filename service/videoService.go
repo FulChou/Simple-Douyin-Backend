@@ -15,8 +15,8 @@ func VideoPublish(ctx context.Context, title, videoPath string, userToken interf
 		return errors.New("user doesn't exist in db")
 	}
 	user := users[0]
-
-	if err := db.CreateVideo(ctx, db.Video{PlayUrl: videoPath, UserId: user.ID, Title: title}); err != nil {
+	coverUrl := "https://c-ssl.duitang.com/uploads/item/201606/29/20160629123842_wZeyR.jpeg"
+	if err := db.CreateVideo(ctx, db.Video{PlayUrl: videoPath, CoverUrl: coverUrl, UserId: user.ID, Title: title}); err != nil {
 		return errors.New("create video record fail in database")
 	}
 	return nil

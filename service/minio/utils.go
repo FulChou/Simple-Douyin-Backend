@@ -1,9 +1,12 @@
 package minio
 
 import (
+	"Simple-Douyin-Backend/utils"
 	"context"
 	"errors"
+	"fmt"
 	"github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
 	"log"
 	"net/url"
 	"time"
@@ -45,11 +48,32 @@ func FileUploader(ctx context.Context, bucketName string, objectName string, fil
 // GetFileUrl get shareUrl of file from minio
 func GetFileUrl(bucketName string, fileName string, expires time.Duration) (*url.URL, error) {
 	ctx := context.Background()
+
+	// get ip
+	ip, err := utils.GetOutBoundIP()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(ip)
+
+	endpoint := ip + ":9000" // "172.26.41.217:9000"
+	accessKeyID := "admin"
+	secretAccessKey := "12345678"
+
+	// Initialize minio client object.
+	client, err := minio.New(endpoint, &minio.Options{
+		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
+		Secure: false,
+	})
+	if err != nil {
+		log.Fatalln("minio connect error", err)
+	}
+
 	reqParams := make(url.Values)
 	if expires <= 0 {
 		expires = time.Second * 60 * 60 * 24
 	}
-	presignedUrl, err := minioClient.PresignedGetObject(ctx, bucketName, fileName, expires, reqParams)
+	presignedUrl, err := client.PresignedGetObject(ctx, bucketName, fileName, expires, reqParams)
 	if err != nil {
 		log.Printf("get url of file %s from bucket %s failed, %s", fileName, bucketName, err)
 		return nil, err

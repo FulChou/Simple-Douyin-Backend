@@ -26,6 +26,7 @@ services:
     environment:
       - MINIO_ROOT_USER=admin
       - MINIO_ROOT_PASSWORD=12345678
+      # - MINIO_SERVER_URL=http://0.0.0.0:9000
     #- MINIO_ACCESS_KEY=AKIAIOSFODNN7EXAMPLE
     #- MINIO_SECRET_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
     healthcheck:
